@@ -1,4 +1,4 @@
-import styles from "@/styles/user.module.css";
+import styles from "@/styles/assets.module.css";
 
 const { CLIENT_ID } = process.env;
 const CALLBACK = "http://localhost:3000/api/auth/callback";

@@ -12,3 +12,10 @@
 .connect:hover {
   filter: brightness(0.9);
 }
+
+.logo {
+  aspect-ratio: 199 / 88;
+  height: 50px;
+  position: relative;
+  margin: auto;
+}

@@ -1,5 +1,4 @@
-import styles from "@/styles/page.module.css";
-import Connect from "@/components/user/connect";
+import styles from "@/styles/layout.module.css";
 import { getUser } from "@/actions";
 
 export default async (): Promise<JSX.Element> => {
@@ -9,10 +8,5 @@ export default async (): Promise<JSX.Element> => {
 
   const { authed, user } = await getUser();
 
-  return (
-    <main className={styles.main}>
-      Hey there {authed && user && user.firstname}
-      <Connect />
-    </main>
-  );
+  return <main className={styles.main}>Hey there {authed && user && user.firstname}</main>;
 };

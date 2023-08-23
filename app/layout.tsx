@@ -4,6 +4,7 @@ import { Inter } from "next/font/google";
 
 import Layout from "@/components/layout/layout";
 import Header from "@/components/layout/header";
+import Footer from "@/components/layout/footer";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,6 +20,7 @@ export default ({ children }: { children: React.ReactNode }): JSX.Element => {
         <Layout>
           <Header />
           {children}
+          <Footer />
         </Layout>
       </body>
     </html>

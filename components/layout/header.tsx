@@ -1,7 +1,15 @@
+import Connect from "@/components/assets/connect";
+import styles from "@/styles/layout.module.css";
+
 export default (): JSX.Element => {
   return (
-    <div>
-      <div>This is a header</div>
-    </div>
+    <header>
+      <nav className={styles.header}>
+        <div></div>
+        <div>
+          <Connect />
+        </div>
+      </nav>
+    </header>
   );
 };

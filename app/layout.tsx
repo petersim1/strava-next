@@ -2,6 +2,9 @@ import "@/styles/globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 
+import Layout from "@/components/layout/layout";
+import Header from "@/components/layout/header";
+
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -12,7 +15,12 @@ export const metadata: Metadata = {
 export default ({ children }: { children: React.ReactNode }): JSX.Element => {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        <Layout>
+          <Header />
+          {children}
+        </Layout>
+      </body>
     </html>
   );
 };

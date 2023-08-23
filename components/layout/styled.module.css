@@ -18,7 +18,9 @@
 
 .header {
   width: 100%;
-  padding: 0.5rem 1rem;
+  max-width: var(--max-width);
+  margin: auto;
+  padding: 2rem;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -27,5 +29,5 @@
 
 .footer {
   width: 100%;
-  padding: 0.5rem 1rem;
+  padding: 1rem;
 }

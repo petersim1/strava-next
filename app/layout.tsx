@@ -1,4 +1,4 @@
-import "@/styles/globals.css";
+import "./globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 
@@ -19,7 +19,7 @@ export default ({ children }: { children: React.ReactNode }): JSX.Element => {
       <body className={inter.className}>
         <Layout>
           <Header />
-          {children}
+          <main>{children}</main>
           <Footer />
         </Layout>
       </body>

@@ -1,5 +1,5 @@
 import Logo from "@/components/assets/logo";
-import styles from "@/styles/layout.module.css";
+import styles from "./styled.module.css";
 
 export default (): JSX.Element => {
   return (

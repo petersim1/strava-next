@@ -1,5 +1,5 @@
 import Image from "next/image";
-import styles from "@/styles/assets.module.css";
+import styles from "./styled.module.css";
 
 export default (): JSX.Element => {
   return (

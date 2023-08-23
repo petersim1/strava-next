@@ -1,5 +1,5 @@
-import styles from "@/styles/layout.module.css";
 import { getUser } from "@/actions";
+import Connect from "@/components/pages/main/connect";
 
 export default async (): Promise<JSX.Element> => {
   // can uncomment below if I decide to go back to middleware instead of server action.
@@ -8,5 +8,10 @@ export default async (): Promise<JSX.Element> => {
 
   const { authed, user } = await getUser();
 
-  return <main className={styles.main}>Hey there {authed && user && user.firstname}</main>;
+  return (
+    <>
+      {!authed && <Connect />}
+      {authed && <div>Hey {user?.firstname}</div>}
+    </>
+  );
 };

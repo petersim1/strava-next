@@ -1,14 +1,16 @@
-import Connect from "@/components/assets/connect";
-import styles from "@/styles/layout.module.css";
+// import Connect from "@/components/assets/connect";
+import styles from "./styled.module.css";
+import { getUser } from "@/actions";
+import Disconnect from "@/components/assets/disconnect";
+import User from "@/components/assets/user";
 
-export default (): JSX.Element => {
+export default async (): Promise<JSX.Element> => {
+  const { authed, user } = await getUser();
   return (
     <header>
       <nav className={styles.header}>
-        <div></div>
-        <div>
-          <Connect />
-        </div>
+        {authed && user && <User user={user} />}
+        {authed && <Disconnect />}
       </nav>
     </header>
   );

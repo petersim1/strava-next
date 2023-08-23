@@ -1,7 +1,19 @@
-import Image from 'next/image'
-import styles from './page.module.css'
+import Image from "next/image";
+import styles from "@/styles/page.module.css";
 
-export default function Home() {
+const { CLIENT_ID } = process.env;
+const CALLBACK = "http://localhost:3000/api/auth/callback";
+
+const URL = `https://www.strava.com/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${CALLBACK}&response_type=code&approval_prompt=force&scope=activity:read`;
+
+import { getUser } from "@/actions";
+
+export default async (): Promise<JSX.Element> => {
+  // const athleteStr = headers().get("X-Strava-Athlete") ?? "{}";
+  // const athlete: StravaAthleteI = JSON.parse(athleteStr);
+
+  const { authed, user } = await getUser();
+
   return (
     <main className={styles.main}>
       <div className={styles.description}>
@@ -15,7 +27,7 @@ export default function Home() {
             target="_blank"
             rel="noopener noreferrer"
           >
-            By{' '}
+            By{" "}
             <Image
               src="/vercel.svg"
               alt="Vercel Logo"
@@ -27,18 +39,10 @@ export default function Home() {
           </a>
         </div>
       </div>
-
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
+      Hey there {authed && user && user.firstname}
+      <a href={URL} referrerPolicy="no-referrer">
+        Auth Here
+      </a>
       <div className={styles.grid}>
         <a
           href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
@@ -85,11 +89,9 @@ export default function Home() {
           <h2>
             Deploy <span>-&gt;</span>
           </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
+          <p>Instantly deploy your Next.js site to a shareable URL with Vercel.</p>
         </a>
       </div>
     </main>
-  )
-}
+  );
+};

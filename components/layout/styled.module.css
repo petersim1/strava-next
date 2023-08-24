@@ -13,7 +13,7 @@
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  gap: 1rem;
+  gap: 3rem;
 }
 
 .header {
@@ -30,4 +30,21 @@
 .footer {
   width: 100%;
   padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.built_by {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.built_by div {
+  display: inline-block;
+  position: relative;
+  height: 0.75rem;
+  aspect-ratio: 394 / 80;
 }

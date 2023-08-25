@@ -24,7 +24,8 @@ export class DB {
         console.log("Creating users store");
         const store = db.createObjectStore("datas", { keyPath: "id" });
         store.createIndex("sport", "sportType", { unique: false });
-        store.createIndex("date", "startDate", { unique: false });
+        store.createIndex("date", "startDate", { unique: true });
+        store.createIndex("sport_date", ["sportType", "startDate"], { unique: true });
       }
     };
 
@@ -92,6 +93,10 @@ export class DB {
           resolve(query.result);
         };
 
+        query.onerror = (): void => {
+          reject(new Error(query.error.message));
+        };
+
         tx.oncomplete = (): void => {
           db.close();
         };
@@ -107,7 +112,26 @@ export class DB {
     });
   }
 
-  getDataByDate(): Promise<StravaActivitySimpleI[]> {
+  getDataByDate({
+    fromDate,
+    toDate,
+  }: {
+    fromDate?: number;
+    toDate?: number;
+  }): Promise<StravaActivitySimpleI[]> {
+    // I want to be sure to include the entire day in toDate.
+    // new Date("mm/dd/yyyy") will assume midnight, which will exclude all events occuring on that day.
+    // make this new date exclusive.
+    fromDate = fromDate ?? 0;
+    const makeOpen = !!toDate;
+    if (!toDate) {
+      toDate = new Date().valueOf();
+    } else {
+      toDate = toDate + 60 * 60 * 24 * 1000;
+    }
+
+    console.log(fromDate, toDate, makeOpen);
+
     return new Promise((resolve, reject) => {
       const request = this.requestDB();
 
@@ -117,10 +141,7 @@ export class DB {
         const store = tx.objectStore("datas");
         const index = store.index("date");
 
-        const range = IDBKeyRange.bound(
-          new Date("june 1 2023").valueOf(),
-          new Date("june 2 2023").valueOf(),
-        );
+        const range = IDBKeyRange.bound(fromDate, toDate, true, makeOpen);
         const query = index.openCursor(range, "next");
 
         const objList: StravaActivitySimpleI[] = [];
@@ -135,6 +156,10 @@ export class DB {
           }
         };
 
+        query.onerror = (): void => {
+          reject(new Error(query.error.message));
+        };
+
         tx.oncomplete = (): void => {
           db.close();
         };
@@ -150,7 +175,23 @@ export class DB {
     });
   }
 
-  getDataByIndex(): Promise<StravaActivitySimpleI[]> {
+  getDataFilter({
+    sportType,
+    fromDate,
+    toDate,
+  }: {
+    sportType: string;
+    fromDate?: number;
+    toDate?: number;
+  }): Promise<StravaActivitySimpleI[]> {
+    fromDate = fromDate ?? 0;
+    const makeOpen = !!toDate;
+    if (!toDate) {
+      toDate = new Date().valueOf();
+    } else {
+      toDate = toDate + 60 * 60 * 24 * 1000;
+    }
+
     return new Promise((resolve, reject) => {
       const request = this.requestDB();
 
@@ -158,12 +199,25 @@ export class DB {
         const db = request.result;
         const tx = db.transaction("datas", "readonly");
         const store = tx.objectStore("datas");
-        const index = store.index("sport");
+        const index = store.index("sport_date");
 
-        const query = index.getAll(["Ride"]);
+        const range = IDBKeyRange.bound([sportType, fromDate], [sportType, toDate], true, makeOpen);
+        const query = index.openCursor(range, "next");
 
+        const objList: StravaActivitySimpleI[] = [];
         query.onsuccess = (): void => {
-          resolve(query.result);
+          const cursor = query.result;
+          if (cursor) {
+            console.log(cursor.value);
+            objList.push(cursor.value);
+            cursor.continue();
+          } else {
+            resolve(objList);
+          }
+        };
+
+        query.onerror = (): void => {
+          reject(new Error(query.error.message));
         };
 
         tx.oncomplete = (): void => {
@@ -174,7 +228,55 @@ export class DB {
           reject(new Error(tx.error?.message));
         };
       };
+      request.onerror = (): void => {
+        reject(new Error(request.error?.message));
+      };
+    });
+  }
 
+  getDistinctKeys(indexName: string): Promise<string[]> {
+    return new Promise((resolve, reject) => {
+      const request = this.requestDB();
+
+      request.onsuccess = (): void => {
+        const db = request.result;
+        const tx = db.transaction("datas", "readonly");
+        const store = tx.objectStore("datas");
+        const index = store.index(indexName);
+
+        // const query = index.getAll();
+        const query = index.openCursor(undefined, "nextunique");
+
+        const keys: string[] = [];
+        query.onsuccess = (): void => {
+          const cursor: IDBCursor = query.result;
+          if (cursor) {
+            keys.push(cursor.key as string);
+            cursor.continue();
+          } else {
+            resolve(keys);
+          }
+        };
+
+        query.onerror = (): void => {
+          reject(new Error(query.error.message));
+        };
+
+        tx.oncomplete = (): void => {
+          db.close();
+        };
+
+        tx.onerror = (): void => {
+          reject(new Error(tx.error?.message));
+        };
+
+        // query.onsuccess = (): void => {
+        //   const keys: Set<string> = new Set(
+        //     query.result.map((res: StravaActivitySimpleI) => res.sportType),
+        //   );
+        //   resolve(Array.from(keys));
+        // };
+      };
       request.onerror = (): void => {
         reject(new Error(request.error?.message));
       };

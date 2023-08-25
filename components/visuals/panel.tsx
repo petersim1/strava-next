@@ -16,7 +16,7 @@ export default ({
     event.preventDefault();
     const formData = Object.fromEntries(new FormData(event.target));
     updateLocalStorage(formData as FilteringI);
-    setFilters(filters);
+    setFilters(formData as FilteringI);
   };
 
   return (

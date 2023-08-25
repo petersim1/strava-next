@@ -1,4 +1,4 @@
-import styles from "@/styles/user.module.css";
+import styles from "./styled.module.css";
 
 const { CLIENT_ID } = process.env;
 const CALLBACK = "http://localhost:3000/api/auth/callback";
@@ -7,7 +7,7 @@ const URL = `https://www.strava.com/oauth/authorize?client_id=${CLIENT_ID}&redir
 
 export default (): JSX.Element => {
   return (
-    <a href={URL} referrerPolicy="no-referrer">
+    <a href={URL} referrerPolicy="no-referrer" className={styles.connect_link}>
       <div className={styles.connect} />
     </a>
   );

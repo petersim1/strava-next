@@ -18,43 +18,9 @@
   filter: brightness(0.9);
 }
 
-.disconnect {
-  cursor: pointer;
-  padding: 0.5rem 1rem;
-  border: 1px solid white;
-  border-radius: 10px;
-  transition: color 0.25s ease-in-out, border-color 0.25s ease-in-out;
-}
-
-.disconnect:hover {
-  border-color: var(--warning);
-  color: var(--warning);
-}
-
 .logo {
   aspect-ratio: 199 / 88;
   height: 40px;
   position: relative;
   margin: auto;
-}
-
-.user_holder {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 1rem;
-}
-
-.user_img {
-  height: 45px;
-  width: 45px;
-  border-radius: 100%;
-  position: relative;
-  overflow: hidden;
-}
-
-.user_img img {
-  position: absolute;
-  width: 100%;
-  height: 100%;
 }

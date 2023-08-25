@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { SignJWT } from "jose";
 
-import { StravaOauthI, JWTtoSignI } from "@/types/strava";
+import { StravaOauthI, JWTtoSignI } from "@/types/auth";
 const { CLIENT_ID, CLIENT_SECRET, JWT_SECRET } = process.env;
 
 export const GET = async (request: NextRequest): Promise<NextResponse> => {

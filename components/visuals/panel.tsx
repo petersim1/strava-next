@@ -1,103 +1,22 @@
-"use client";
+import { Dispatch, SetStateAction } from "react";
 
-import { useState, useEffect } from "react";
-
-import { getLocalStorage } from "@/lib/localStorage/filtering";
+import { filterOptions } from "@/lib/constants";
+import { updateLocalStorage } from "@/lib/localStorage";
 import { FilteringI } from "@/types/data";
 import styles from "./styled.module.css";
 
-const filterOptions = [
-  {
-    name: "Activity",
-    key: "activity",
-    type: "select",
-    required: true,
-    options: [
-      "AlpineSki",
-      "BackcountrySki",
-      "Badminton",
-      "Canoeing",
-      "Crossfit",
-      "EBikeRide",
-      "Elliptical",
-      "EMountainBikeRide",
-      "Golf",
-      "GravelRide",
-      "Handcycle",
-      "HighIntensityIntervalTraining",
-      "Hike",
-      "IceSkate",
-      "InlineSkate",
-      "Kayaking",
-      "Kitesurf",
-      "MountainBikeRide",
-      "NordicSki",
-      "Pickleball",
-      "Pilates",
-      "Racquetball",
-      "Ride",
-      "RockClimbing",
-      "RollerSki",
-      "Rowing",
-      "Run",
-      "Sail",
-      "Skateboard",
-      "Snowboard",
-      "Snowshoe",
-      "Soccer",
-      "Squash",
-      "StairStepper",
-      "StandUpPaddling",
-      "Surfing",
-      "Swim",
-      "TableTennis",
-      "Tennis",
-      "TrailRun",
-      "Velomobile",
-      "VirtualRide",
-      "VirtualRow",
-      "VirtualRun",
-      "Walk",
-      "WeightTraining",
-      "Wheelchair",
-      "Windsurf",
-      "Workout",
-      "Yoga",
-    ],
-  },
-  {
-    name: "Start Date",
-    key: "startDate",
-    type: "date",
-    required: false,
-    options: [],
-  },
-  {
-    name: "End Date",
-    key: "endDate",
-    type: "date",
-    required: false,
-    options: [],
-  },
-];
-
-const defaultFilters = {
-  activity: "Ride",
-  startDate: undefined,
-  endDate: undefined,
-};
-
-export default (): JSX.Element => {
-  const [filters, setFilters] = useState<FilteringI>({ ...defaultFilters });
-
-  useEffect(() => {
-    setFilters(getLocalStorage());
-  }, []);
-
+export default ({
+  filters,
+  setFilters,
+}: {
+  filters: FilteringI;
+  setFilters: Dispatch<SetStateAction<FilteringI>>;
+}): JSX.Element => {
   const handleSubmit = (event: React.ChangeEvent<HTMLFormElement>): void => {
     event.preventDefault();
     const formData = Object.fromEntries(new FormData(event.target));
-    console.log(formData);
+    updateLocalStorage(formData as FilteringI);
+    setFilters(filters);
   };
 
   return (
@@ -121,12 +40,14 @@ export default (): JSX.Element => {
             {filter.type === "date" && (
               <input
                 type="date"
+                name={filter.key}
                 required={filter.required}
                 defaultValue={filters[filter.key as keyof typeof filters]}
               />
             )}
           </div>
         ))}
+        <button type="submit">submit</button>
       </form>
     </div>
   );

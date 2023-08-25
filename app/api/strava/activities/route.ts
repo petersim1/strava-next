@@ -2,32 +2,37 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { decodeJwt } from "jose";
 
-import { JWTtoSignI } from "@/types/strava";
-import { StravaActivityDetailedI, StravaActivitySimpleI } from "@/types/data";
+import { JWTtoSignI } from "@/types/auth";
+import { StravaActivitySimpleI } from "@/types/data";
+import { StravaActivityI } from "@/types/strava";
 
-const baseURL = "https://www.strava.com/api/v3";
+const getData = async (token: string): Promise<StravaActivitySimpleI[]> => {
+  const headers = new Headers();
+  headers.set("Authorization", `Bearer ${token}`);
 
-const getData = async (
-  pageNum: number,
-  headers: Headers,
-  rides: StravaActivitySimpleI[],
-): Promise<StravaActivitySimpleI[]> => {
-  fetch(baseURL + `/athlete/activities?page=${pageNum}&per_page=50`, { headers })
-    .then((response) => {
-      if (response.ok) {
-        return response.json();
-      }
-    })
-    .then((activities: StravaActivityDetailedI[]) => {
-      activities.forEach((activity) => {
-        rides.push({
-          id: activity.id,
-          sportType: activity.sport_type,
-          startDate: activity.start_date_local,
-        });
+  const rides: StravaActivitySimpleI[] = [];
+  let pageNum = 1;
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
+    const response = await fetch(
+      `https://www.strava.com/api/v3/athlete/activities?page=${pageNum}&per_page=50`,
+      {
+        headers,
+      },
+    );
+    if (!response.ok) break;
+    const activities: StravaActivityI[] = await response.json();
+    if (activities.length == 0) break;
+    activities.forEach((activity) => {
+      rides.push({
+        id: activity.id,
+        sportType: activity.sport_type,
+        startDate: activity.start_date_local,
+        map: activity.map,
       });
-      getData(pageNum + 1, headers, rides);
     });
+    pageNum++;
+  }
   return rides;
 };
 
@@ -35,18 +40,12 @@ export const GET = async (): Promise<NextResponse> => {
   const cookieStore = cookies();
   const { value: token } = cookieStore.get("token") ?? { value: undefined };
   if (!token) {
-    return NextResponse.json({});
+    return NextResponse.json([]);
   }
   const decoded = decodeJwt(token);
   const { access_token: accessToken } = decoded as JWTtoSignI;
 
-  console.log(accessToken);
+  const rides = await getData(accessToken);
 
-  const headers = new Headers({
-    Authorization: `Bearer: ${accessToken}`,
-  });
-
-  const rides = await getData(1, headers, []);
-
-  return NextResponse.json({ rides });
+  return NextResponse.json(rides);
 };

@@ -1,8 +1,8 @@
-// import Connect from "@/components/assets/connect";
+import Disconnect from "@/components/user/disconnect";
+import User from "@/components/user/user";
+import Logo from "@/components/assets/logo";
 import styles from "./styled.module.css";
 import { getUser } from "@/actions";
-import Disconnect from "@/components/assets/disconnect";
-import User from "@/components/assets/user";
 
 export default async (): Promise<JSX.Element> => {
   const { authed, user } = await getUser();
@@ -10,6 +10,7 @@ export default async (): Promise<JSX.Element> => {
     <header>
       <nav className={styles.header}>
         {authed && user && <User user={user} />}
+        <Logo />
         {authed && <Disconnect />}
       </nav>
     </header>

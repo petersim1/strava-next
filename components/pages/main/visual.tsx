@@ -21,7 +21,7 @@ export default (): JSX.Element => {
     // db.getDataByKey("1234").then((data) => console.log(data));
     // db.getDataByKey("1235").then((data) => console.log(data));
 
-    db.getDataByIndex().then((data) => console.log(data));
+    // db.getDataByIndex().then((data) => console.log(data));
 
     // db.addData([
     //   {

@@ -9,6 +9,6 @@ export type FilteringI = {
 export type StravaActivitySimpleI = {
   id: string;
   sportType: string;
-  startDate: string;
+  startDate: number;
   map: StravaMapI;
 };

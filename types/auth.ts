@@ -1,5 +1,10 @@
 import { StravaAthleteI } from "./strava";
 
+export type IsAuthed = {
+  authed: boolean;
+  user?: StravaAthleteI;
+};
+
 export type StravaOauthI = {
   token_type: string;
   expires_at: number;

@@ -5,9 +5,9 @@ export class DB {
 
   version: number;
 
-  constructor(storeName: string) {
+  constructor(storeName: string, version?: number) {
     this.storeName = storeName;
-    this.version = 1;
+    this.version = version || 1;
 
     this.initDB();
   }
@@ -15,6 +15,7 @@ export class DB {
   initDB(): void {
     const request = indexedDB.open(this.storeName);
 
+    // onupgradeneeded won't exist if version is passed.
     request.onupgradeneeded = (): void => {
       const db = request.result;
 
@@ -22,54 +23,63 @@ export class DB {
       if (!db.objectStoreNames.contains("datas")) {
         console.log("Creating users store");
         const store = db.createObjectStore("datas", { keyPath: "id" });
-        store.createIndex("sport", ["sportType"], { unique: false });
-        store.createIndex("date", ["startDate"], { unique: false });
+        store.createIndex("sport", "sportType", { unique: false });
+        store.createIndex("date", "startDate", { unique: false });
+        store.createIndex("sport_date", ["sportType", "startDate"], { unique: false });
       }
-      // no need to resolve here
     };
 
     request.onsuccess = (): void => {
       const db = request.result;
       this.version = db.version;
-      console.log("request.onsuccess - initDB", this.version);
     };
 
     request.onerror = (event): void => {
-      console.log("error creating db");
       console.log(event);
     };
   }
 
-  addData(datas: StravaActivitySimpleI[]): void {
-    const request = indexedDB.open(this.storeName, this.version);
+  requestDB(): IDBRequest {
+    return indexedDB.open(this.storeName, this.version);
+  }
 
-    request.onsuccess = (): void => {
-      console.log("request.onsuccess - addData");
-      const db = request.result;
-      const tx = db.transaction("datas", "readwrite");
-      const store = tx.objectStore("datas");
+  addData(datas: StravaActivitySimpleI[]): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      const request = this.requestDB();
 
-      datas.forEach((data) => {
-        store.put(data);
-      });
+      request.onsuccess = (): void => {
+        const db = request.result;
+        const tx = db.transaction("datas", "readwrite");
+        const store = tx.objectStore("datas");
 
-      tx.oncomplete = (): void => {
-        db.close();
+        datas.forEach((data) => {
+          const d = store.put(data);
+          d.onerror = (): void => {
+            reject(new Error(d.error.message));
+          };
+        });
+
+        tx.oncomplete = (): void => {
+          db.close();
+          resolve(true);
+        };
+
+        tx.onerror = (): void => {
+          reject(tx.error?.message);
+        };
       };
-    };
 
-    request.onerror = (): void => {
-      const error = request.error?.message;
-      console.log(error);
-    };
+      request.onerror = (): void => {
+        reject(request.error?.message);
+      };
+    });
   }
 
   getDataByKey(key: string): Promise<StravaActivitySimpleI> {
-    return new Promise((resolve) => {
-      const request = indexedDB.open(this.storeName);
+    return new Promise((resolve, reject) => {
+      const request = this.requestDB();
 
       request.onsuccess = (): void => {
-        console.log("request.onsuccess - getDataByKey");
         const db = request.result;
         const tx = db.transaction("datas", "readonly");
         const store = tx.objectStore("datas");
@@ -77,57 +87,226 @@ export class DB {
         const query = store.get(key);
 
         query.onsuccess = (): void => {
+          if (query.result === undefined) {
+            reject(new Error("no data exists"));
+          }
           resolve(query.result);
+        };
+
+        query.onerror = (): void => {
+          reject(new Error(query.error.message));
         };
 
         tx.oncomplete = (): void => {
           db.close();
         };
+
+        tx.onerror = (): void => {
+          reject(new Error(tx.error?.message));
+        };
+      };
+
+      request.onerror = (): void => {
+        reject(new Error(request.error?.message));
       };
     });
   }
 
-  getDataByIndex(): Promise<StravaActivitySimpleI[]> {
-    return new Promise((resolve) => {
-      const request = indexedDB.open(this.storeName);
+  getDataByDate({
+    fromDate,
+    toDate,
+  }: {
+    fromDate?: number;
+    toDate?: number;
+  }): Promise<StravaActivitySimpleI[]> {
+    // I want to be sure to include the entire day in toDate.
+    // new Date("mm/dd/yyyy") will assume midnight, which will exclude all events occuring on that day.
+    // make this new date exclusive.
+    fromDate = fromDate ?? 0;
+    const makeOpen = !!toDate;
+    if (!toDate) {
+      toDate = new Date().valueOf();
+    } else {
+      toDate = toDate + 60 * 60 * 24 * 1000;
+    }
+
+    return new Promise((resolve, reject) => {
+      const request = this.requestDB();
 
       request.onsuccess = (): void => {
-        console.log("request.onsuccess - getDataByIndex");
         const db = request.result;
         const tx = db.transaction("datas", "readonly");
         const store = tx.objectStore("datas");
-        const sportIndex = store.index("sport");
+        const index = store.index("date");
 
-        const query = sportIndex.getAll(["Ride"]);
+        const range = IDBKeyRange.bound(fromDate, toDate, true, makeOpen);
+        const query = index.openCursor(range, "next");
 
+        const objList: StravaActivitySimpleI[] = [];
         query.onsuccess = (): void => {
-          resolve(query.result);
+          const cursor = query.result;
+          if (cursor) {
+            objList.push(cursor.value);
+            cursor.continue();
+          } else {
+            resolve(objList);
+          }
+        };
+
+        query.onerror = (): void => {
+          reject(new Error(query.error.message));
         };
 
         tx.oncomplete = (): void => {
           db.close();
         };
+
+        tx.onerror = (): void => {
+          reject(new Error(tx.error?.message));
+        };
+      };
+
+      request.onerror = (): void => {
+        reject(new Error(request.error?.message));
       };
     });
   }
 
-  deleteData(key: string): void {
-    const request = indexedDB.open(this.storeName, this.version);
+  getDataFilter({
+    sportType,
+    fromDate,
+    toDate,
+  }: {
+    sportType: string;
+    fromDate?: number;
+    toDate?: number;
+  }): Promise<StravaActivitySimpleI[]> {
+    fromDate = fromDate ?? 0;
+    const makeOpen = !!toDate;
+    if (!toDate) {
+      toDate = new Date().valueOf();
+    } else {
+      toDate = toDate + 60 * 60 * 24 * 1000;
+    }
 
-    request.onsuccess = (): void => {
-      console.log("request.onsuccess - deleteData", key);
-      const db = request.result;
-      const tx = db.transaction("datas", "readwrite");
-      const store = tx.objectStore("datas");
-      const res = store.delete(key);
+    return new Promise((resolve, reject) => {
+      const request = this.requestDB();
 
-      // add listeners that will resolve the Promise
-      res.onsuccess = (): void => {
-        console.log("deleted data");
+      request.onsuccess = (): void => {
+        const db = request.result;
+        const tx = db.transaction("datas", "readonly");
+        const store = tx.objectStore("datas");
+        const index = store.index("sport_date");
+
+        const range = IDBKeyRange.bound([sportType, fromDate], [sportType, toDate], true, makeOpen);
+        const query = index.openCursor(range, "next");
+
+        const objList: StravaActivitySimpleI[] = [];
+        query.onsuccess = (): void => {
+          const cursor = query.result;
+          if (cursor) {
+            objList.push(cursor.value);
+            cursor.continue();
+          } else {
+            resolve(objList);
+          }
+        };
+
+        query.onerror = (): void => {
+          reject(new Error(query.error.message));
+        };
+
+        tx.oncomplete = (): void => {
+          db.close();
+        };
+
+        tx.onerror = (): void => {
+          reject(new Error(tx.error?.message));
+        };
       };
-      res.onerror = (): void => {
-        console.log("couldn't delete data");
+      request.onerror = (): void => {
+        reject(new Error(request.error?.message));
       };
-    };
+    });
+  }
+
+  getDistinctKeys(indexName: string): Promise<string[]> {
+    return new Promise((resolve, reject) => {
+      const request = this.requestDB();
+
+      request.onsuccess = (): void => {
+        const db = request.result;
+        const tx = db.transaction("datas", "readonly");
+        const store = tx.objectStore("datas");
+        const index = store.index(indexName);
+
+        // const query = index.getAll();
+        const query = index.openCursor(undefined, "nextunique");
+
+        const keys: string[] = [];
+        query.onsuccess = (): void => {
+          const cursor: IDBCursor = query.result;
+          if (cursor) {
+            keys.push(cursor.key as string);
+            cursor.continue();
+          } else {
+            resolve(keys);
+          }
+        };
+
+        query.onerror = (): void => {
+          reject(new Error(query.error.message));
+        };
+
+        tx.oncomplete = (): void => {
+          db.close();
+        };
+
+        tx.onerror = (): void => {
+          reject(new Error(tx.error?.message));
+        };
+
+        // query.onsuccess = (): void => {
+        //   const keys: Set<string> = new Set(
+        //     query.result.map((res: StravaActivitySimpleI) => res.sportType),
+        //   );
+        //   resolve(Array.from(keys));
+        // };
+      };
+      request.onerror = (): void => {
+        reject(new Error(request.error?.message));
+      };
+    });
+  }
+
+  clearDataStore(): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      const request = this.requestDB();
+
+      request.onsuccess = (): void => {
+        const db = request.result;
+        const tx = db.transaction("datas", "readwrite");
+        const store = tx.objectStore("datas");
+        const deleteReq = store.clear();
+
+        deleteReq.onsuccess = (): void => {
+          resolve(true);
+        };
+        deleteReq.onerror = (): void => {
+          reject(new Error(deleteReq.error?.message));
+        };
+        tx.oncomplete = (): void => {
+          db.close();
+        };
+
+        tx.onerror = (): void => {
+          reject(new Error(tx.error?.message));
+        };
+      };
+
+      request.onerror = (): void => {
+        reject(new Error(request.error?.message));
+      };
+    });
   }
 }

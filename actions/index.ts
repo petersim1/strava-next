@@ -3,13 +3,7 @@
 import { decodeJwt } from "jose";
 import { cookies } from "next/headers";
 
-import { StravaAthleteI } from "@/types/strava";
-import { JWTtoSignI } from "@/types/auth";
-
-type IsAuthed = {
-  authed: boolean;
-  user?: StravaAthleteI;
-};
+import { JWTtoSignI, IsAuthed } from "@/types/auth";
 
 export const getUser = async (): Promise<IsAuthed> => {
   // middleware will handle token refresh, so we won't need to here.

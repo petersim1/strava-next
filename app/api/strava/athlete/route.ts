@@ -18,7 +18,6 @@ export const GET = async (): Promise<NextResponse> => {
 
   return fetch("https://www.strava.com/api/v3/athlete", { headers })
     .then((response) => {
-      console.log(response);
       if (response.ok) {
         return response.json();
       }

@@ -2,7 +2,7 @@ import { Dispatch, SetStateAction } from "react";
 
 import { FilterOptionsI } from "@/types/data";
 import { updateLocalStorage } from "@/lib/localStorage";
-import { FilteringI } from "@/types/data";
+import { FilteringI, Stores } from "@/types/data";
 import styles from "./styled.module.css";
 
 export default ({
@@ -19,11 +19,9 @@ export default ({
   const handleSubmit = (event: React.ChangeEvent<HTMLFormElement>): void => {
     event.preventDefault();
     const formData = Object.fromEntries(new FormData(event.target));
-    updateLocalStorage(formData as FilteringI);
+    updateLocalStorage(Stores.FILTER, formData as FilteringI);
     setFilters(formData as FilteringI);
   };
-
-  console.log(filters.activity);
 
   return (
     <div className={styles.panel}>

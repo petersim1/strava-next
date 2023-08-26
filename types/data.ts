@@ -1,9 +1,9 @@
 import { StravaMapI } from "./strava";
 
 export type FilteringI = {
-  activity: string | undefined;
-  startDate: string | undefined;
-  endDate: string | undefined;
+  activity: string;
+  startDate: string;
+  endDate: string;
 };
 
 export type StravaActivitySimpleI = {

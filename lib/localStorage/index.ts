@@ -2,7 +2,7 @@ import { FilteringI, Stores } from "@/types/data";
 
 import { defaultFilters } from "@/lib/constants";
 
-export const getLocalStorage = (key: Stores): FilteringI => {
+export const getLocalStorage = (key: Stores): FilteringI | number => {
   const filter = localStorage.getItem(key);
 
   if (!filter) {
@@ -17,10 +17,10 @@ export const getLocalStorage = (key: Stores): FilteringI => {
   return JSON.parse(filter);
 };
 
-export const updateLocalStorage = (data: FilteringI): void => {
-  localStorage.setItem("filtering", JSON.stringify(data));
+export const updateLocalStorage = (key: Stores, data: FilteringI | number): void => {
+  localStorage.setItem(key, JSON.stringify(data));
 };
 
-export const clearLocalStorage = (): void => {
-  localStorage.removeItem("filtering");
+export const clearLocalStorage = (key: Stores): void => {
+  localStorage.removeItem(key);
 };

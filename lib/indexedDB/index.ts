@@ -24,8 +24,8 @@ export class DB {
         console.log("Creating users store");
         const store = db.createObjectStore("datas", { keyPath: "id" });
         store.createIndex("sport", "sportType", { unique: false });
-        store.createIndex("date", "startDate", { unique: true });
-        store.createIndex("sport_date", ["sportType", "startDate"], { unique: true });
+        store.createIndex("date", "startDate", { unique: false });
+        store.createIndex("sport_date", ["sportType", "startDate"], { unique: false });
       }
     };
 
@@ -130,8 +130,6 @@ export class DB {
       toDate = toDate + 60 * 60 * 24 * 1000;
     }
 
-    console.log(fromDate, toDate, makeOpen);
-
     return new Promise((resolve, reject) => {
       const request = this.requestDB();
 
@@ -148,7 +146,6 @@ export class DB {
         query.onsuccess = (): void => {
           const cursor = query.result;
           if (cursor) {
-            console.log(cursor.value);
             objList.push(cursor.value);
             cursor.continue();
           } else {
@@ -208,7 +205,6 @@ export class DB {
         query.onsuccess = (): void => {
           const cursor = query.result;
           if (cursor) {
-            console.log(cursor.value);
             objList.push(cursor.value);
             cursor.continue();
           } else {
@@ -283,7 +279,7 @@ export class DB {
     });
   }
 
-  deleteData(key: string): Promise<boolean> {
+  clearDataStore(): Promise<boolean> {
     return new Promise((resolve, reject) => {
       const request = this.requestDB();
 
@@ -291,13 +287,20 @@ export class DB {
         const db = request.result;
         const tx = db.transaction("datas", "readwrite");
         const store = tx.objectStore("datas");
-        const res = store.delete(key);
+        const deleteReq = store.clear();
 
-        res.onsuccess = (): void => {
+        deleteReq.onsuccess = (): void => {
           resolve(true);
         };
-        res.onerror = (): void => {
-          reject(new Error(res.error?.message));
+        deleteReq.onerror = (): void => {
+          reject(new Error(deleteReq.error?.message));
+        };
+        tx.oncomplete = (): void => {
+          db.close();
+        };
+
+        tx.onerror = (): void => {
+          reject(new Error(tx.error?.message));
         };
       };
 

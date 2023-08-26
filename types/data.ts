@@ -12,3 +12,17 @@ export type StravaActivitySimpleI = {
   startDate: number;
   map: StravaMapI;
 };
+
+export enum Stores {
+  FILTER = "filtering",
+  DATE = "last_pull",
+}
+
+export type FilterOptionsI = {
+  [key: string]: {
+    name: string;
+    type: string;
+    required: boolean;
+    options: string[];
+  };
+};

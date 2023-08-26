@@ -1,15 +1,19 @@
 import { Dispatch, SetStateAction } from "react";
 
-import { filterOptions } from "@/lib/constants";
+import { FilterOptionsI } from "@/types/data";
 import { updateLocalStorage } from "@/lib/localStorage";
 import { FilteringI } from "@/types/data";
 import styles from "./styled.module.css";
 
 export default ({
   filters,
+  loading,
+  filterOptions,
   setFilters,
 }: {
   filters: FilteringI;
+  loading: boolean;
+  filterOptions: FilterOptionsI;
   setFilters: Dispatch<SetStateAction<FilteringI>>;
 }): JSX.Element => {
   const handleSubmit = (event: React.ChangeEvent<HTMLFormElement>): void => {
@@ -19,30 +23,37 @@ export default ({
     setFilters(formData as FilteringI);
   };
 
+  console.log(filters.activity);
+
   return (
     <div className={styles.panel}>
       <form onSubmit={handleSubmit}>
-        {filterOptions.map((filter, ind) => (
+        {Object.entries(filterOptions).map(([key, filter], ind) => (
           <div key={ind}>
-            <label htmlFor={filter.key}>{filter.name}</label>
+            <label htmlFor={key}>{filter.name}</label>
             {filter.type === "select" && (
               <select
-                name={filter.key}
+                name={key}
                 required={filter.required}
-                defaultValue={filters[filter.key as keyof typeof filters] || ""}
+                disabled={loading}
+                defaultValue={filters[key as keyof typeof filters]}
               >
-                <option value="">--Select an option--</option>
+                {/* Adding a value here makes it always be considered the default... removed it. */}
+                <option disabled>--Select an option--</option>
                 {filter.options.map((option, ind2) => (
-                  <option key={ind2}>{option}</option>
+                  <option key={ind2} value={option}>
+                    {option}
+                  </option>
                 ))}
               </select>
             )}
             {filter.type === "date" && (
               <input
                 type="date"
-                name={filter.key}
+                name={key}
                 required={filter.required}
-                defaultValue={filters[filter.key as keyof typeof filters]}
+                disabled={loading}
+                defaultValue={filters[key as keyof typeof filters]}
               />
             )}
           </div>

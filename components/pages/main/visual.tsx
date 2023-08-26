@@ -4,17 +4,19 @@ import { useState, useEffect } from "react";
 
 import Plot from "@/components/visuals/plot";
 import Panel from "@/components/visuals/panel";
-import { defaultFilters, filterOptions, fallbackOptions } from "@/lib/constants";
+import { defaultFilters, filterOptions } from "@/lib/constants";
+// import { defaultFilters, filterOptions, fallbackOptions } from "@/lib/constants";
 // import { mockIdbData } from "@/lib/constants";
 import { getLocalStorage, updateLocalStorage } from "@/lib/localStorage";
 import { DB } from "@/lib/indexedDB";
-import { FilteringI, Stores, FilterOptionsI, StravaActivitySimpleI } from "@/types/data";
+import { FilteringI, Stores, StravaActivitySimpleI } from "@/types/data";
+// import { FilteringI, Stores, FilterOptionsI, StravaActivitySimpleI } from "@/types/data";
 import styles from "../styled.module.css";
 
 export default (): JSX.Element => {
   const [filters, setFilters] = useState<FilteringI>({ ...defaultFilters });
-  const [options, setOptions] = useState<FilterOptionsI>(structuredClone(filterOptions));
-  const [loading, setLoading] = useState(true);
+  // const [options, setOptions] = useState<FilterOptionsI>(structuredClone(filterOptions));
+  // const [loading, setLoading] = useState(true);
   const [fetched, setFetched] = useState(false);
   const [plotData, setPlotData] = useState<StravaActivitySimpleI[]>([]);
 
@@ -52,37 +54,37 @@ export default (): JSX.Element => {
       });
   }, []);
 
-  useEffect(() => {
-    if (fetched) {
-      const db = new DB("activities");
-      // get the distinct activity types to use in form.
-      db.getDistinctKeys("sport")
-        .then((data) => {
-          setOptions((prev) => ({
-            ...prev,
-            activity: {
-              ...prev.activity,
-              options: data,
-            },
-          }));
-        })
-        .catch(() => {
-          setOptions((prev) => ({
-            ...prev,
-            activity: {
-              ...prev.activity,
-              options: fallbackOptions,
-            },
-          }));
-        });
-      setFilters(getLocalStorage(Stores.FILTER) as FilteringI);
+  // useEffect(() => {
+  //   if (fetched) {
+  //     const db = new DB("activities");
+  //     // get the distinct activity types to use in form.
+  //     db.getDistinctKeys("sport")
+  //       .then((data) => {
+  //         setOptions((prev) => ({
+  //           ...prev,
+  //           activity: {
+  //             ...prev.activity,
+  //             options: data,
+  //           },
+  //         }));
+  //       })
+  //       .catch(() => {
+  //         setOptions((prev) => ({
+  //           ...prev,
+  //           activity: {
+  //             ...prev.activity,
+  //             options: fallbackOptions,
+  //           },
+  //         }));
+  //       });
+  //     setFilters(getLocalStorage(Stores.FILTER) as FilteringI);
 
-      setLoading(false);
-    }
-  }, [fetched]);
+  //     setLoading(false);
+  //   }
+  // }, [fetched]);
 
   useEffect(() => {
-    if (!loading && filters.activity) {
+    if (fetched && filters.activity) {
       const db = new DB("activities");
       let sDate = undefined;
       let tDate = undefined;
@@ -102,12 +104,17 @@ export default (): JSX.Element => {
           setPlotData([]);
         });
     }
-  }, [filters, loading]);
+  }, [filters, fetched]);
 
   return (
     <div className={styles.visual_holder}>
       <Plot plotData={plotData} />
-      <Panel filters={filters} setFilters={setFilters} loading={loading} filterOptions={options} />
+      <Panel
+        filters={filters}
+        setFilters={setFilters}
+        loading={!fetched}
+        filterOptions={filterOptions}
+      />
     </div>
   );
 };

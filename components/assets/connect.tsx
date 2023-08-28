@@ -12,7 +12,7 @@ const getURL = (): string => {
 };
 
 export default (): JSX.Element => {
-  // const CALLBACK = "http://localhost:3000/api/auth/callback";
+  // localhost is whitelisted.
   const url = getURL();
 
   const urlUse = new URL("https://www.strava.com/oauth/authorize");

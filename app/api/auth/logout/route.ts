@@ -5,24 +5,11 @@ import { SignJWT } from "jose";
 import { StravaOauthI, JWTtoSignI } from "@/types/auth";
 const { CLIENT_ID, CLIENT_SECRET, JWT_SECRET } = process.env;
 
-export const GET = async (request: NextRequest): Promise<NextResponse> => {
+export const POST = async (request: NextRequest): Promise<NextResponse> => {
+  const { cookies } = request;
   const url = new URL(request.url);
 
-  const error = url.searchParams.get("error");
-  const code = url.searchParams.get("code");
-
-  const redirectUrl = new URL("/", request.url);
-
-  if (error) {
-    redirectUrl.searchParams.set("error", error);
-    return NextResponse.redirect(redirectUrl);
-  }
-
-  const urlFetch = new URL("https://www.strava.com/oauth/token");
-  urlFetch.searchParams.set("client_id", CLIENT_ID?.toString() || "");
-  urlFetch.searchParams.set("client_secret", CLIENT_SECRET?.toString() || "");
-  urlFetch.searchParams.set("code", code?.toString() || "");
-  urlFetch.searchParams.set("grant_type", "authorization_code");
+  const urlFetch = "https://www.strava.com/oauth/deauthorize";
 
   return fetch(urlFetch, { method: "POST" })
     .then((response) => {

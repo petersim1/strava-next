@@ -17,7 +17,7 @@ export default (): JSX.Element => {
 
   const urlUse = new URL("https://www.strava.com/oauth/authorize");
   urlUse.searchParams.set("client_id", CLIENT_ID?.toString() || "");
-  urlUse.searchParams.set("redirect_uri", url + CALLBACK + "-test-me-out");
+  urlUse.searchParams.set("redirect_uri", url + CALLBACK);
   urlUse.searchParams.set("response_type", "code");
   urlUse.searchParams.set("approval_prompt", "force");
   urlUse.searchParams.set("scope", "activity:read");

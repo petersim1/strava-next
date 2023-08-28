@@ -26,3 +26,14 @@ export type FilterOptionsI = {
     options: string[];
   };
 };
+
+export type DataStateI = {
+  loading: boolean;
+  error: boolean;
+  done: boolean;
+};
+
+export type PlotDataI = {
+  x: number;
+  y: number;
+};

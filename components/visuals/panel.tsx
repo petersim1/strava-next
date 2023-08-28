@@ -10,11 +10,15 @@ export default ({
   loading,
   filterOptions,
   setFilters,
+  opacity,
+  handleOpacity,
 }: {
   filters: FilteringI;
   loading: boolean;
   filterOptions: FilterOptionsI;
   setFilters: Dispatch<SetStateAction<FilteringI>>;
+  opacity: number;
+  handleOpacity: (e: any) => void;
 }): JSX.Element => {
   const handleSubmit = (event: React.ChangeEvent<HTMLFormElement>): void => {
     event.preventDefault();
@@ -58,6 +62,18 @@ export default ({
         ))}
         <button type="submit">submit</button>
       </form>
+      <div>
+        <label htmlFor="opacity">Adjust Brightness</label>
+        <input
+          name="opacity"
+          type="range"
+          min={0}
+          max={1}
+          step={0.05}
+          value={opacity}
+          onChange={handleOpacity}
+        />
+      </div>
     </div>
   );
 };

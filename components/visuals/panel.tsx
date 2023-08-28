@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, FormEvent } from "react";
 
 import { FilterOptionsI } from "@/types/data";
 import { updateLocalStorage } from "@/lib/localStorage";
@@ -18,7 +18,7 @@ export default ({
   filterOptions: FilterOptionsI;
   setFilters: Dispatch<SetStateAction<FilteringI>>;
   opacity: number;
-  handleOpacity: (e: any) => void;
+  handleOpacity: (e: FormEvent<HTMLInputElement>) => void;
 }): JSX.Element => {
   const handleSubmit = (event: React.ChangeEvent<HTMLFormElement>): void => {
     event.preventDefault();

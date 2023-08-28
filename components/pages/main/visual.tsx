@@ -16,8 +16,8 @@ export default (): JSX.Element => {
   // const [options, setOptions] = useState<FilterOptionsI>(structuredClone(filterOptions));
   // const [loading, setLoading] = useState(true);
 
-  const handleOpacity = (e: any): void => {
-    setOpacity(Number(e.target.value));
+  const handleOpacity = (e: React.FormEvent<HTMLInputElement>): void => {
+    setOpacity(Number(e.currentTarget.value));
   };
 
   useEffect(() => {

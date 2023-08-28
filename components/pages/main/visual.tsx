@@ -12,8 +12,13 @@ import { getLocalStorage } from "@/lib/localStorage";
 
 export default (): JSX.Element => {
   const [filters, setFilters] = useState<FilteringI>({ ...defaultFilters });
+  const [opacity, setOpacity] = useState(0.5);
   // const [options, setOptions] = useState<FilterOptionsI>(structuredClone(filterOptions));
   // const [loading, setLoading] = useState(true);
+
+  const handleOpacity = (e: any): void => {
+    setOpacity(Number(e.target.value));
+  };
 
   useEffect(() => {
     setFilters(getLocalStorage(Stores.FILTER) as FilteringI);
@@ -25,12 +30,14 @@ export default (): JSX.Element => {
 
   return (
     <div className={styles.visual_holder}>
-      <Plot plotData={plotData} />
+      <Plot plotData={plotData} dataState={dataState} opacity={opacity} />
       <Panel
         filters={filters}
         setFilters={setFilters}
         loading={dataState.loading}
         filterOptions={filterOptions}
+        opacity={opacity}
+        handleOpacity={handleOpacity}
       />
     </div>
   );

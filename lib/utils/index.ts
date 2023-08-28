@@ -5,9 +5,15 @@ import * as d3 from "d3";
 import { PlotDataI } from "@/types/data";
 import { plottingProps } from "@/lib/constants";
 
-const getBoxedExtent = (data: PlotDataI[]): [number, number][] => {
+const getBoundingBox = (data: PlotDataI[]): [[number, number], [number, number]] => {
   const xExt = <[number, number]>d3.extent(data, (d) => d.x);
   const yExt = <[number, number]>d3.extent(data, (d) => d.y);
+
+  return [xExt, yExt];
+};
+
+const getBoxedExtent = (data: PlotDataI[]): [number, number][] => {
+  const [xExt, yExt] = getBoundingBox(data);
 
   const xDiff = xExt[1] - xExt[0];
   const yDiff = yExt[1] - yExt[0];
@@ -26,6 +32,7 @@ const getBoxedExtent = (data: PlotDataI[]): [number, number][] => {
 export const createViz = (
   plotHolder: d3.Selection<null, unknown, null, undefined>,
   data: PlotDataI[][],
+  opacity: number,
 ): void => {
   const dataFlat = data.reduce<PlotDataI[]>(
     (out, arrays) => out.concat(arrays.map((coord) => coord)),
@@ -67,11 +74,11 @@ export const createViz = (
       .selectAll("line")
       .data(data)
       .join("path")
-      .attr("stroke", "var(--strava-orange)")
+      // .attr("stroke", "var(--strava-orange)")
+      .attr("stroke", "#ff9e0c")
       // .attr("stroke", (_, i) => colors(i))
       .attr("stroke-width", "4px")
-      .style("opacity", 0.25)
-      // .style("mix-blend-mode", "multiply")
+      .style("opacity", opacity)
       .attr("d", line);
   };
 

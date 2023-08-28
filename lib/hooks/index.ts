@@ -3,7 +3,8 @@
 import { useEffect, useReducer, useState } from "react";
 import { dataStatusReducer } from "@/lib/reducers";
 import { getLocalStorage, updateLocalStorage } from "@/lib/localStorage";
-import { Stores, DataStateI, FilteringI, StravaActivitySimpleI } from "@/types/data";
+import { Stores, DataStateI, FilteringI, StravaActivitySimpleI, PlotDataI } from "@/types/data";
+import { decodePolyline } from "@/lib/utils";
 import { DB } from "@/lib/indexedDB";
 
 export const useDataFetcher = (): DataStateI => {
@@ -12,7 +13,8 @@ export const useDataFetcher = (): DataStateI => {
     loading: true,
     done: false,
   });
-
+  // on page refresh, wait until mounted to grab the date of last pull from localstorage
+  // use this to fetch only those recent activities (if any), and update  localstorage if fetch succeeded.
   useEffect(() => {
     const now = new Date().valueOf();
     const lastPull = getLocalStorage(Stores.DATE);
@@ -54,8 +56,9 @@ export const useDataArrUpdate = ({
 }: {
   state: DataStateI;
   filters: FilteringI;
-}): StravaActivitySimpleI[] => {
-  const [data, setData] = useState<StravaActivitySimpleI[]>([]);
+}): PlotDataI[][] => {
+  // whenever the filters are updated, or the fetch state is done, grab associated data from indexedDB.
+  const [data, setData] = useState<PlotDataI[][]>([]);
 
   useEffect(() => {
     if (!state.done || !filters.activity) return;
@@ -70,8 +73,9 @@ export const useDataArrUpdate = ({
     }
 
     db.getDataFilter({ sportType: filters.activity, fromDate: sDate, toDate: tDate })
-      .then((results) => {
-        setData(results);
+      .then((results: StravaActivitySimpleI[]) => {
+        const decoded = results.map((d) => decodePolyline(d.map.summary_polyline));
+        setData(decoded);
       })
       .catch((error) => {
         console.log(error);

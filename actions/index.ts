@@ -21,10 +21,3 @@ export const getUser = async (): Promise<IsAuthed> => {
     user: athlete,
   };
 };
-
-export const logout = (): void => {
-  const cookieStore = cookies();
-  if (cookieStore.has("token")) {
-    cookieStore.delete("token");
-  }
-};

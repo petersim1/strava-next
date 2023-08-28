@@ -29,7 +29,7 @@ export const GET = async (request: NextRequest): Promise<NextResponse> => {
       if (response.ok) {
         return response.json();
       }
-      throw response;
+      throw new Error(response.statusText);
     })
     .then((result: StravaOauthI) => {
       const obj: JWTtoSignI = {

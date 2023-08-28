@@ -10,13 +10,18 @@ export const refreshToken = (token: string): Promise<StravaOauthI> => {
   const decoded = decodeJwt(token);
   const { refresh_token: rToken, athlete } = decoded as JWTtoSignI;
 
-  const url = `https://www.strava.com/oauth/token?client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}&grant_type=refresh_token&refresh_token=${rToken}`;
-  return fetch(url, { method: "POST" })
+  const urlUse = new URL("https://www.strava.com/oauth/token");
+  urlUse.searchParams.set("client_id", CLIENT_ID?.toString() || "");
+  urlUse.searchParams.set("client_secret", CLIENT_SECRET?.toString() || "");
+  urlUse.searchParams.set("grant_type", "refresh_token");
+  urlUse.searchParams.set("refresh_token", rToken);
+
+  return fetch(urlUse, { method: "POST" })
     .then((response) => {
       if (response.ok) {
         return response.json();
       }
-      throw new Error("");
+      throw new Error(response.statusText);
     })
     .then((result: StravaRefreshI) => {
       return {

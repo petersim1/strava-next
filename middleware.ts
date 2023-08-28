@@ -10,7 +10,7 @@ export const middleware = async (request: NextRequest): Promise<NextResponse> =>
   // Primarily used to handle token refreshing.
   // Don't want to get to a state where the user is logged in for a long duration,
   // their token expired, and we go to call the API. This middleware will make sure
-  // that all requests to the api have update tokens.
+  // that all requests to the api + pages have updated tokens.
   const { value: token } = request.cookies.get("token") ?? { value: undefined };
 
   const response = NextResponse.next();
@@ -31,5 +31,5 @@ export const middleware = async (request: NextRequest): Promise<NextResponse> =>
 };
 
 export const config = {
-  matcher: ["/"],
+  matcher: ["/", "/api/:path*"],
 };

@@ -16,18 +16,20 @@ export default (): JSX.Element => {
         if (response.ok) {
           return db.clearDataStore();
         }
+        throw new Error(response.statusText);
       })
       .then((ok) => {
         if (ok) {
           clearLocalStorage(Stores.DATE);
           clearLocalStorage(Stores.FILTER);
-          // trigger a refresh so that we get the server action in page.tsx (auth state).
-          router.refresh();
+          return;
         }
+        throw new Error("couldn't delete indexeddb");
       })
-      .catch((error) => {
-        console.log(error);
-      });
+      .catch((error: Error) => {
+        console.log(error.message);
+      })
+      .finally(() => router.refresh());
   };
 
   return (

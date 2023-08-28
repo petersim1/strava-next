@@ -17,23 +17,25 @@ const getData = async (
 
   const rides: StravaActivitySimpleI[] = [];
   let pageNum = 1;
-  let URL = "https://www.strava.com/api/v3/athlete/activities?per_page=30";
+
+  const urlUse = new URL("https://www.strava.com/api/v3/athlete/activities");
+  urlUse.searchParams.set("per_page", "30");
   if (before) {
-    URL += `&before=${before}`;
+    urlUse.searchParams.set("before", before.toString());
   }
   if (after) {
-    URL += `&after=${after}`;
+    urlUse.searchParams.set("after", after.toString());
   }
+
   // eslint-disable-next-line no-constant-condition
   while (true) {
-    const urlUse = URL + `&page=${pageNum}`;
-    const response = await fetch(urlUse, {
-      headers,
-    });
+    urlUse.searchParams.set("page", pageNum.toString());
+    const response = await fetch(urlUse, { headers });
     if (!response.ok) break;
     const activities: StravaActivityI[] = await response.json();
     if (activities.length == 0) break;
     activities.forEach((activity) => {
+      // only going to support Ride+Run activities for now.
       if (["Ride", "Run"].includes(activity.sport_type)) {
         rides.push({
           id: activity.id,
@@ -52,7 +54,7 @@ export const GET = async (request: NextRequest): Promise<NextResponse> => {
   const cookieStore = cookies();
   const { value: token } = cookieStore.get("token") ?? { value: undefined };
   if (!token) {
-    return NextResponse.json([]);
+    return NextResponse.json([], { status: 401 });
   }
   const { searchParams } = request.nextUrl;
   let before;

@@ -35,6 +35,6 @@ export const POST = async (request: NextRequest): Promise<NextResponse> => {
     })
     .catch((error: Error) => {
       console.log(error);
-      return NextResponse.json({ ok: false, error: error.message }, { status: 401 });
+      return NextResponse.json(error.message, { status: 401 });
     });
 };

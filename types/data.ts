@@ -32,3 +32,8 @@ export type DataStateI = {
   error: boolean;
   done: boolean;
 };
+
+export type PlotDataI = {
+  x: number;
+  y: number;
+};

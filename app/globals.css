@@ -1,5 +1,5 @@
 :root {
-  --max-width: 1400px;
+  --max-width: 1200px;
   --border-radius: 12px;
   --font-mono: ui-monospace, Menlo, Monaco, 'Cascadia Mono', 'Segoe UI Mono',
     'Roboto Mono', 'Oxygen Mono', 'Ubuntu Monospace', 'Source Code Pro',
@@ -31,7 +31,7 @@ main {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  width: var(--max-width);
+  width: 100%;
 }
 
 a {

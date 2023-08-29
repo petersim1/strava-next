@@ -3,6 +3,7 @@ import type { NextRequest } from "next/server";
 import { decodeJwt } from "jose";
 
 import { JWTtoSignI } from "@/types/auth";
+import { RequestError } from "@/lib/errors";
 
 export const POST = async (request: NextRequest): Promise<NextResponse> => {
   const { cookies } = request;
@@ -22,7 +23,7 @@ export const POST = async (request: NextRequest): Promise<NextResponse> => {
       if (response.ok) {
         return response.json();
       }
-      throw new Error(response.statusText);
+      throw new RequestError(response.statusText, response.status);
     })
     .then((result) => {
       const revokedToken = result.access_token;
@@ -31,10 +32,10 @@ export const POST = async (request: NextRequest): Promise<NextResponse> => {
         res.cookies.delete("token");
         return res;
       }
-      throw new Error("Token mismatch");
+      throw new RequestError("Token mismatch", 500);
     })
-    .catch((error: Error) => {
+    .catch((error: RequestError) => {
       console.log(error);
-      return NextResponse.json(error.message, { status: 401 });
+      return NextResponse.json(error.message, { status: error.status, statusText: error.message });
     });
 };

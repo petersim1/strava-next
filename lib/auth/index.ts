@@ -1,7 +1,26 @@
 import { decodeJwt, SignJWT } from "jose";
 import { StravaOauthI, JWTtoSignI, StravaRefreshI } from "@/types/auth";
+import { StravaAthleteI } from "@/types/strava";
 
 const { CLIENT_ID, CLIENT_SECRET, JWT_SECRET } = process.env;
+
+export const signJWTwithInputs = async (
+  athlete: StravaAthleteI,
+  access_token: string,
+  refresh_token: string,
+  expires_at: number,
+): Promise<string> => {
+  const signed = await new SignJWT({
+    athlete,
+    access_token,
+    refresh_token,
+  })
+    .setProtectedHeader({ alg: "HS256" })
+    .setIssuedAt()
+    .setExpirationTime(expires_at * 1000)
+    .sign(new TextEncoder().encode(JWT_SECRET));
+  return signed;
+};
 
 export const refreshToken = (token: string): Promise<StravaOauthI> => {
   // This return object doesn't contain "athlete"...
@@ -32,22 +51,10 @@ export const refreshToken = (token: string): Promise<StravaOauthI> => {
 };
 
 export const refreshAndSign = async (token: string): Promise<string> => {
-  const {
-    athlete,
-    refresh_token: rToken,
-    access_token: aToken,
-    expires_at: exp,
-  } = await refreshToken(token);
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  const { athlete, refresh_token, access_token, expires_at } = await refreshToken(token);
 
-  const newToken = await new SignJWT({
-    athlete,
-    refresh_token: rToken,
-    access_token: aToken,
-  })
-    .setProtectedHeader({ alg: "HS256" })
-    .setIssuedAt()
-    .setExpirationTime(exp * 1000)
-    .sign(new TextEncoder().encode(JWT_SECRET));
+  const newToken = await signJWTwithInputs(athlete, access_token, refresh_token, expires_at);
 
   return newToken;
 };

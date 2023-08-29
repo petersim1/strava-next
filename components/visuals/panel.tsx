@@ -31,7 +31,7 @@ export default ({ plotData, opacity }: { plotData: PlotDataI[]; opacity: number 
     <div className={styles.panel}>
       <p className={styles.header}>Visible Rides</p>
       <div className={styles.panel_activities}>
-        {plotData.toReversed().map((data) => {
+        {plotData.reverse().map((data) => {
           const hr = Math.floor(data.moving_time / 60 / 60);
           const min = Math.floor((data.moving_time - hr * 60 * 60) / 60);
           return (

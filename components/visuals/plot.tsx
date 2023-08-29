@@ -4,7 +4,7 @@ import { useRef, useEffect } from "react";
 import { select } from "d3";
 
 import { PlotDataI, DataStateI } from "@/types/data";
-import { createViz } from "@/lib/utils";
+import { createViz } from "@/lib/utils/plotting";
 import Loader from "../layout/loader";
 import styles from "./styled.module.css";
 
@@ -13,7 +13,7 @@ export default ({
   dataState,
   opacity,
 }: {
-  plotData: PlotDataI[][];
+  plotData: PlotDataI[];
   dataState: DataStateI;
   opacity: number;
 }): JSX.Element => {

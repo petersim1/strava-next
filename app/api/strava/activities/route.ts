@@ -6,67 +6,62 @@ import { decodeJwt } from "jose";
 import { JWTtoSignI } from "@/types/auth";
 import { StravaActivitySimpleI } from "@/types/data";
 import { StravaActivityI } from "@/types/strava";
+import { RequestError } from "@/lib/errors";
+import { constrainOutput } from "@/lib/utils";
 
-const getData = async (
-  token: string,
-  before?: number,
-  after?: number,
+const dataRecursion = (
+  baseURL: URL,
+  headers: Headers,
+  page: number,
+  results: StravaActivitySimpleI[],
 ): Promise<StravaActivitySimpleI[]> => {
-  const headers = new Headers();
-  headers.set("Authorization", `Bearer ${token}`);
-
-  const rides: StravaActivitySimpleI[] = [];
-  let pageNum = 1;
-  let URL = "https://www.strava.com/api/v3/athlete/activities?per_page=30";
-  if (before) {
-    URL += `&before=${before}`;
-  }
-  if (after) {
-    URL += `&after=${after}`;
-  }
-  // eslint-disable-next-line no-constant-condition
-  while (true) {
-    const urlUse = URL + `&page=${pageNum}`;
-    const response = await fetch(urlUse, {
-      headers,
-    });
-    if (!response.ok) break;
-    const activities: StravaActivityI[] = await response.json();
-    if (activities.length == 0) break;
-    activities.forEach((activity) => {
-      if (["Ride", "Run"].includes(activity.sport_type)) {
-        rides.push({
-          id: activity.id,
-          sportType: activity.sport_type,
-          startDate: new Date(activity.start_date_local).valueOf(),
-          map: activity.map,
-        });
+  baseURL.searchParams.set("page", page.toString());
+  return fetch(baseURL, { headers })
+    .then((response) => {
+      if (response.ok) {
+        return response.json();
       }
+      throw new RequestError(response.statusText, response.status);
+    })
+    .then((activities: StravaActivityI[]) => {
+      if (activities.length === 0) {
+        return results;
+      }
+      activities.forEach((activity) => {
+        if (["Ride", "Run"].includes(activity.sport_type)) {
+          const data = constrainOutput(activity);
+          results.push({ ...data });
+        }
+      });
+      return dataRecursion(baseURL, headers, page + 1, results);
     });
-    pageNum++;
-  }
-  return rides;
 };
 
 export const GET = async (request: NextRequest): Promise<NextResponse> => {
   const cookieStore = cookies();
   const { value: token } = cookieStore.get("token") ?? { value: undefined };
   if (!token) {
-    return NextResponse.json([]);
+    return NextResponse.json([], { status: 401 });
   }
-  const { searchParams } = request.nextUrl;
-  let before;
-  let after;
-  if (searchParams.has("before")) {
-    before = Math.round(Number(searchParams.get("before")) / 1000);
-  }
-  if (searchParams.has("after")) {
-    after = Math.round(Number(searchParams.get("after")) / 1000);
-  }
+
   const decoded = decodeJwt(token);
   const { access_token: accessToken } = decoded as JWTtoSignI;
+  const headers = new Headers();
+  headers.set("Authorization", `Bearer ${accessToken}`);
 
-  const rides = await getData(accessToken, before, after);
+  const baseURL = new URL("https://www.strava.com/api/v3/athlete/activities");
+  baseURL.searchParams.set("per_page", "30");
 
-  return NextResponse.json(rides);
+  const { before, after } = Object.fromEntries(request.nextUrl.searchParams.entries());
+
+  if (before) baseURL.searchParams.set("before", (Number(before) / 1000).toString());
+  if (after) baseURL.searchParams.set("after", (Number(after) / 1000).toString());
+
+  return dataRecursion(baseURL, headers, 1, [])
+    .then((results) => {
+      return NextResponse.json(results);
+    })
+    .catch((error: RequestError) => {
+      return NextResponse.json([], { status: error.status, statusText: error.message });
+    });
 };

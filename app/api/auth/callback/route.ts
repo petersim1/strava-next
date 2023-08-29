@@ -1,17 +1,16 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { SignJWT } from "jose";
 
-import { StravaOauthI, JWTtoSignI } from "@/types/auth";
-const { CLIENT_ID, CLIENT_SECRET, JWT_SECRET } = process.env;
+import { StravaOauthI } from "@/types/auth";
+import { signJWTwithInputs } from "@/lib/auth";
+import { RequestError } from "@/lib/errors";
+const { CLIENT_ID, CLIENT_SECRET } = process.env;
 
 export const GET = async (request: NextRequest): Promise<NextResponse> => {
-  const url = new URL(request.url);
+  const url = new URL(request.nextUrl);
+  const { error, code } = Object.fromEntries(url.searchParams.entries());
 
-  const error = url.searchParams.get("error");
-  const code = url.searchParams.get("code");
-
-  const redirectUrl = new URL("/", request.url);
+  const redirectUrl = new URL("/", request.nextUrl);
 
   if (error) {
     redirectUrl.searchParams.set("error", error);
@@ -29,27 +28,21 @@ export const GET = async (request: NextRequest): Promise<NextResponse> => {
       if (response.ok) {
         return response.json();
       }
-      throw response;
+      throw new RequestError(response.statusText, response.status);
     })
     .then((result: StravaOauthI) => {
-      const obj: JWTtoSignI = {
-        athlete: result.athlete,
-        refresh_token: result.refresh_token,
-        access_token: result.access_token,
-      };
-      return new SignJWT({ ...obj })
-        .setProtectedHeader({ alg: "HS256" })
-        .setIssuedAt()
-        .setExpirationTime(result.expires_at * 1000)
-        .sign(new TextEncoder().encode(JWT_SECRET));
+      console.log(result);
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      const { athlete, refresh_token, access_token, expires_at } = result;
+      return signJWTwithInputs(athlete, access_token, refresh_token, expires_at);
     })
     .then((token) => {
       const res = NextResponse.redirect(redirectUrl);
       res.cookies.set("token", token);
       return res;
     })
-    .catch((err) => {
+    .catch((err: RequestError) => {
       console.log(err);
-      return NextResponse.redirect(redirectUrl, { status: 401 });
+      return NextResponse.redirect(redirectUrl, { status: err.status, statusText: err.message });
     });
 };

@@ -1,42 +1,41 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { SignJWT } from "jose";
+import { decodeJwt } from "jose";
 
-import { StravaOauthI, JWTtoSignI } from "@/types/auth";
-const { CLIENT_ID, CLIENT_SECRET, JWT_SECRET } = process.env;
+import { JWTtoSignI } from "@/types/auth";
+import { RequestError } from "@/lib/errors";
 
 export const POST = async (request: NextRequest): Promise<NextResponse> => {
   const { cookies } = request;
-  const url = new URL(request.url);
+  const { value: token } = cookies.get("token") ?? { value: undefined };
+  if (!token) {
+    return NextResponse.json({ ok: false }, { status: 401 });
+  }
 
-  const urlFetch = "https://www.strava.com/oauth/deauthorize";
+  const decoded = decodeJwt(token);
+  const { access_token: accessToken } = decoded as JWTtoSignI;
 
-  return fetch(urlFetch, { method: "POST" })
+  const headers = new Headers();
+  headers.set("Authorization", `Bearer ${accessToken}`);
+
+  return fetch("https://www.strava.com/oauth/deauthorize", { method: "POST", headers })
     .then((response) => {
       if (response.ok) {
         return response.json();
       }
-      throw response;
+      throw new RequestError(response.statusText, response.status);
     })
-    .then((result: StravaOauthI) => {
-      const obj: JWTtoSignI = {
-        athlete: result.athlete,
-        refresh_token: result.refresh_token,
-        access_token: result.access_token,
-      };
-      return new SignJWT({ ...obj })
-        .setProtectedHeader({ alg: "HS256" })
-        .setIssuedAt()
-        .setExpirationTime(result.expires_at * 1000)
-        .sign(new TextEncoder().encode(JWT_SECRET));
+    .then((result) => {
+      const revokedToken = result.access_token;
+      if (revokedToken === accessToken) {
+        const res = NextResponse.json({ ok: true });
+        res.cookies.delete("token");
+        return res;
+      }
+      throw new RequestError("Token mismatch", 500);
     })
-    .then((token) => {
-      const res = NextResponse.redirect(redirectUrl);
-      res.cookies.set("token", token);
-      return res;
-    })
-    .catch((err) => {
-      console.log(err);
-      return NextResponse.redirect(redirectUrl, { status: 401 });
+    .catch((error: RequestError) => {
+      console.log(error);
+      return NextResponse.json(error.message, { status: error.status, statusText: error.message });
     });
 };

@@ -3,8 +3,9 @@
 import { useEffect, useReducer, useState } from "react";
 import { dataStatusReducer } from "@/lib/reducers";
 import { getLocalStorage, updateLocalStorage } from "@/lib/localStorage";
+import { RequestError } from "@/lib/errors";
 import { Stores, DataStateI, FilteringI, StravaActivitySimpleI, PlotDataI } from "@/types/data";
-import { decodePolyline } from "@/lib/utils";
+import { decodePolyline } from "@/lib/utils/plotting";
 import { DB } from "@/lib/indexedDB";
 
 export const useDataFetcher = (): DataStateI => {
@@ -25,15 +26,12 @@ export const useDataFetcher = (): DataStateI => {
         if (response.ok) {
           return response.json();
         }
-        throw new Error("Couldn't fetch from api");
+        throw new RequestError(response.statusText, response.status);
       })
       .then((data) => {
         return db.addData(data);
       })
-      .then((ok) => {
-        if (!ok) {
-          throw new Error("unsuccessful at adding to indexedDB");
-        }
+      .then(() => {
         updateLocalStorage(Stores.DATE, now);
       })
       .catch((error) => {
@@ -56,9 +54,9 @@ export const useDataArrUpdate = ({
 }: {
   state: DataStateI;
   filters: FilteringI;
-}): PlotDataI[][] => {
+}): PlotDataI[] => {
   // whenever the filters are updated, or the fetch state is done, grab associated data from indexedDB.
-  const [data, setData] = useState<PlotDataI[][]>([]);
+  const [data, setData] = useState<PlotDataI[]>([]);
 
   useEffect(() => {
     if (!state.done || !filters.activity) return;
@@ -74,7 +72,7 @@ export const useDataArrUpdate = ({
 
     db.getDataFilter({ sportType: filters.activity, fromDate: sDate, toDate: tDate })
       .then((results: StravaActivitySimpleI[]) => {
-        const decoded = results.map((d) => decodePolyline(d.map.summary_polyline));
+        const decoded = results.map((d) => decodePolyline(d));
         setData(decoded);
       })
       .catch((error) => {

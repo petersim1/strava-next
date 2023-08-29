@@ -1,25 +1,35 @@
 "use client";
+import { useRouter } from "next/navigation";
 
-import { logout } from "@/actions";
 import { DB } from "@/lib/indexedDB";
 import { clearLocalStorage } from "@/lib/localStorage";
 import { Stores } from "@/types/data";
 import styles from "./styled.module.css";
 
 export default (): JSX.Element => {
+  const router = useRouter();
+
   const handleLogout = (): void => {
     const db = new DB("activities");
-    db.clearDataStore()
+    fetch("/api/auth/logout", { method: "POST" })
+      .then((response) => {
+        if (response.ok) {
+          return db.clearDataStore();
+        }
+        throw new Error(response.statusText);
+      })
       .then((ok) => {
         if (ok) {
           clearLocalStorage(Stores.DATE);
           clearLocalStorage(Stores.FILTER);
-          logout();
+          return;
         }
+        throw new Error("couldn't delete indexeddb");
       })
-      .catch((error) => {
-        console.log(error);
-      });
+      .catch((error: Error) => {
+        console.log(error.message);
+      })
+      .finally(() => router.refresh());
   };
 
   return (

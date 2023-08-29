@@ -8,9 +8,13 @@ export type FilteringI = {
 
 export type StravaActivitySimpleI = {
   id: string;
-  sportType: string;
-  startDate: number;
+  sport_type: string;
+  start_date_local: number;
   map: StravaMapI;
+  name: string;
+  distance: number;
+  moving_time: number;
+  elapsed_time: number;
 };
 
 export enum Stores {
@@ -33,7 +37,18 @@ export type DataStateI = {
   done: boolean;
 };
 
-export type PlotDataI = {
+export type CoordinatesI = {
   x: number;
   y: number;
+};
+
+export type PlotDataI = {
+  id: string;
+  sport_type: string;
+  start_date_local: number;
+  name: string;
+  distance: number;
+  moving_time: number;
+  elapsed_time: number;
+  coordinates: CoordinatesI[];
 };

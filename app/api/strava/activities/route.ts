@@ -7,6 +7,7 @@ import { JWTtoSignI } from "@/types/auth";
 import { StravaActivitySimpleI } from "@/types/data";
 import { StravaActivityI } from "@/types/strava";
 import { RequestError } from "@/lib/errors";
+import { constrainOutput } from "@/lib/utils";
 
 const dataRecursion = (
   baseURL: URL,
@@ -28,12 +29,8 @@ const dataRecursion = (
       }
       activities.forEach((activity) => {
         if (["Ride", "Run"].includes(activity.sport_type)) {
-          results.push({
-            id: activity.id,
-            sportType: activity.sport_type,
-            startDate: new Date(activity.start_date_local).valueOf(),
-            map: activity.map,
-          });
+          const data = constrainOutput(activity);
+          results.push({ ...data });
         }
       });
       return dataRecursion(baseURL, headers, page + 1, results);

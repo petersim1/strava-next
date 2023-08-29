@@ -21,11 +21,10 @@ export class DB {
 
       // if the data object store doesn't exist, create it
       if (!db.objectStoreNames.contains("datas")) {
-        console.log("Creating users store");
         const store = db.createObjectStore("datas", { keyPath: "id" });
-        store.createIndex("sport", "sportType", { unique: false });
-        store.createIndex("date", "startDate", { unique: false });
-        store.createIndex("sport_date", ["sportType", "startDate"], { unique: false });
+        store.createIndex("sport", "sport_type", { unique: false });
+        store.createIndex("date", "start_date_local", { unique: false });
+        store.createIndex("sport_date", ["sport_type", "start_date_local"], { unique: false });
       }
     };
 
@@ -43,7 +42,7 @@ export class DB {
     return indexedDB.open(this.storeName, this.version);
   }
 
-  addData(datas: StravaActivitySimpleI[]): Promise<boolean> {
+  addData(datas: StravaActivitySimpleI[]): Promise<void> {
     return new Promise((resolve, reject) => {
       const request = this.requestDB();
 
@@ -61,7 +60,7 @@ export class DB {
 
         tx.oncomplete = (): void => {
           db.close();
-          resolve(true);
+          resolve();
         };
 
         tx.onerror = (): void => {

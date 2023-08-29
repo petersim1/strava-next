@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 
 import Plot from "@/components/visuals/plot";
+import Filters from "@/components/visuals/filters";
 import Panel from "@/components/visuals/panel";
 import { defaultFilters, filterOptions } from "@/lib/constants";
 import { FilteringI, Stores } from "@/types/data";
@@ -31,7 +32,8 @@ export default (): JSX.Element => {
   return (
     <div className={styles.visual_holder}>
       <Plot plotData={plotData} dataState={dataState} opacity={opacity} />
-      <Panel
+      <Panel plotData={plotData} opacity={opacity} />
+      <Filters
         filters={filters}
         setFilters={setFilters}
         loading={dataState.loading}

@@ -1,78 +1,67 @@
-import { Dispatch, SetStateAction, FormEvent } from "react";
+import { select, easeLinear } from "d3";
 
-import { FilterOptionsI } from "@/types/data";
-import { updateLocalStorage } from "@/lib/localStorage";
-import { FilteringI, Stores } from "@/types/data";
+import { PlotDataI } from "@/types/data";
 import styles from "./styled.module.css";
 
-export default ({
-  filters,
-  loading,
-  filterOptions,
-  setFilters,
-  opacity,
-  handleOpacity,
-}: {
-  filters: FilteringI;
-  loading: boolean;
-  filterOptions: FilterOptionsI;
-  setFilters: Dispatch<SetStateAction<FilteringI>>;
-  opacity: number;
-  handleOpacity: (e: FormEvent<HTMLInputElement>) => void;
-}): JSX.Element => {
-  const handleSubmit = (event: React.ChangeEvent<HTMLFormElement>): void => {
-    event.preventDefault();
-    const formData = Object.fromEntries(new FormData(event.target));
-    updateLocalStorage(Stores.FILTER, formData as FilteringI);
-    setFilters(formData as FilteringI);
+export default ({ plotData, opacity }: { plotData: PlotDataI[]; opacity: number }): JSX.Element => {
+  const handleEnter = (e: React.MouseEvent<HTMLDivElement>): void => {
+    const { index } = e.currentTarget.dataset;
+    select(`path[data-index='${index}']`)
+      .raise()
+      .transition()
+      .duration(250)
+      .ease(easeLinear)
+      .style("opacity", 1)
+      .style("transform", "translate(0, -20px)")
+      .attr("stroke", "white");
+  };
+
+  const handleExit = (e: React.MouseEvent<HTMLDivElement>): void => {
+    const { index } = e.currentTarget.dataset;
+    select(`path[data-index='${index}']`)
+      .transition()
+      .duration(250)
+      .ease(easeLinear)
+      .style("opacity", opacity)
+      .style("transform", "translate(0, 0)")
+      .attr("stroke", "#ff9e0c");
   };
 
   return (
     <div className={styles.panel}>
-      <form onSubmit={handleSubmit}>
-        {Object.entries(filterOptions).map(([key, filter], ind) => (
-          <div key={ind}>
-            <label htmlFor={key}>{filter.name}</label>
-            {filter.type === "select" && (
-              <select
-                name={key}
-                required={filter.required}
-                disabled={loading}
-                defaultValue={filters[key as keyof typeof filters]}
+      <p className={styles.header}>Visible Rides</p>
+      <div className={styles.panel_activities}>
+        {plotData.toReversed().map((data) => {
+          const hr = Math.floor(data.moving_time / 60 / 60);
+          const min = Math.floor((data.moving_time - hr * 60 * 60) / 60);
+          return (
+            <div
+              key={data.id}
+              className={styles.activity_description}
+              data-index={data.id}
+              onMouseEnter={handleEnter}
+              onMouseLeave={handleExit}
+            >
+              <div className={styles.content}>
+                <div>{new Date(data.start_date_local).toDateString()}</div>
+                <div className={styles.name}>{data.name}</div>
+                <div className={styles.info}>
+                  <div>{Math.round(data.distance * 0.000621371 * 100) / 100} mi</div>
+                  <div>
+                    {hr}hr {min}min
+                  </div>
+                </div>
+              </div>
+              <a
+                href={`https://strava.com/activities/${data.id}`}
+                target="_blank"
+                referrerPolicy="no-referrer"
               >
-                {/* Adding a value here makes it always be considered the default... removed it. */}
-                <option disabled>--Select an option--</option>
-                {filter.options.map((option, ind2) => (
-                  <option key={ind2} value={option}>
-                    {option}
-                  </option>
-                ))}
-              </select>
-            )}
-            {filter.type === "date" && (
-              <input
-                type="date"
-                name={key}
-                required={filter.required}
-                disabled={loading}
-                defaultValue={filters[key as keyof typeof filters]}
-              />
-            )}
-          </div>
-        ))}
-        <button type="submit">submit</button>
-      </form>
-      <div>
-        <label htmlFor="opacity">Adjust Brightness</label>
-        <input
-          name="opacity"
-          type="range"
-          min={0}
-          max={1}
-          step={0.05}
-          value={opacity}
-          onChange={handleOpacity}
-        />
+                <div>{"->"}</div>
+              </a>
+            </div>
+          );
+        })}
       </div>
     </div>
   );

@@ -31,7 +31,6 @@ export const GET = async (request: NextRequest): Promise<NextResponse> => {
       throw new RequestError(response.statusText, response.status);
     })
     .then((result: StravaOauthI) => {
-      console.log(result);
       // eslint-disable-next-line @typescript-eslint/naming-convention
       const { athlete, refresh_token, access_token, expires_at } = result;
       return signJWTwithInputs(athlete, access_token, refresh_token, expires_at);

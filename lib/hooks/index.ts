@@ -18,8 +18,8 @@ export const useDataFetcher = (): DataStateI => {
   // use this to fetch only those recent activities (if any), and update  localstorage if fetch succeeded.
   useEffect(() => {
     const now = new Date().valueOf();
-    const lastPull = getLocalStorage(Stores.DATE);
     const db = new DB("activities");
+    const lastPull = getLocalStorage(Stores.DATE);
 
     fetch(`/api/strava/activities?after=${lastPull}`)
       .then((response) => {

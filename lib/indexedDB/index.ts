@@ -7,17 +7,23 @@ export class DB {
 
   constructor(storeName: string, version?: number) {
     this.storeName = storeName;
-    this.version = version || 1;
+    this.version = version || 2;
 
     this.initDB();
   }
 
+  requestDB(): IDBOpenDBRequest {
+    return indexedDB.open(this.storeName, this.version);
+  }
+
   initDB(): void {
-    const request = indexedDB.open(this.storeName);
+    const request = this.requestDB();
 
     // onupgradeneeded won't exist if version is passed.
-    request.onupgradeneeded = (): void => {
+    request.onupgradeneeded = (e): void => {
+      console.log("upgrade needed");
       const db = request.result;
+      console.log(db.version, e.oldVersion);
 
       // if the data object store doesn't exist, create it
       if (!db.objectStoreNames.contains("datas")) {
@@ -29,17 +35,15 @@ export class DB {
     };
 
     request.onsuccess = (): void => {
+      console.log("db success");
       const db = request.result;
+      console.log(db.version);
       this.version = db.version;
     };
 
     request.onerror = (event): void => {
       console.log(event);
     };
-  }
-
-  requestDB(): IDBRequest {
-    return indexedDB.open(this.storeName, this.version);
   }
 
   addData(datas: StravaActivitySimpleI[]): Promise<void> {
@@ -54,7 +58,7 @@ export class DB {
         datas.forEach((data) => {
           const d = store.put(data);
           d.onerror = (): void => {
-            reject(new Error(d.error.message));
+            reject(new Error(d.error?.message));
           };
         });
 
@@ -93,7 +97,7 @@ export class DB {
         };
 
         query.onerror = (): void => {
-          reject(new Error(query.error.message));
+          reject(new Error(query.error?.message));
         };
 
         tx.oncomplete = (): void => {
@@ -153,7 +157,7 @@ export class DB {
         };
 
         query.onerror = (): void => {
-          reject(new Error(query.error.message));
+          reject(new Error(query.error?.message));
         };
 
         tx.oncomplete = (): void => {
@@ -212,7 +216,7 @@ export class DB {
         };
 
         query.onerror = (): void => {
-          reject(new Error(query.error.message));
+          reject(new Error(query.error?.message));
         };
 
         tx.oncomplete = (): void => {
@@ -244,7 +248,7 @@ export class DB {
 
         const keys: string[] = [];
         query.onsuccess = (): void => {
-          const cursor: IDBCursor = query.result;
+          const cursor = query.result;
           if (cursor) {
             keys.push(cursor.key as string);
             cursor.continue();
@@ -254,7 +258,7 @@ export class DB {
         };
 
         query.onerror = (): void => {
-          reject(new Error(query.error.message));
+          reject(new Error(query.error?.message));
         };
 
         tx.oncomplete = (): void => {

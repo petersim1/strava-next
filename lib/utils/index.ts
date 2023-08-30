@@ -2,6 +2,7 @@ import { StravaActivitySimpleI } from "@/types/data";
 import { StravaActivityI } from "@/types/strava";
 
 export const constrainOutput = (data: StravaActivityI): StravaActivitySimpleI => {
+  // start_date_local is a string. Convert it to epoch time (with milliseconds).
   return {
     id: data.id,
     sport_type: data.sport_type,

@@ -198,7 +198,7 @@ export class DB {
         const index = store.index("sport_date");
 
         const range = IDBKeyRange.bound([sportType, fromDate], [sportType, toDate], true, makeOpen);
-        const query = index.openCursor(range, "next");
+        const query = index.openCursor(range, "prev");
 
         const objList: StravaActivitySimpleI[] = [];
         query.onsuccess = (): void => {

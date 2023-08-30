@@ -39,8 +39,8 @@ export const useDataFetcher = (): DataStateI => {
         dispatch({ type: "ERROR" });
       })
       .finally(() => {
-        // might need to conditionally update this. If fetch fails, or if indexedDB doesn't update
-        // I probably don't want to mark this as fetched.
+        // Will be marked as DONE no matter what, but error=true if an error occurs.
+        // make sure to check for this in conditional UI renders.
         dispatch({ type: "DONE" });
       });
   }, []);

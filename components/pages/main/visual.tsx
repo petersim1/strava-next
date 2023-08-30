@@ -14,8 +14,6 @@ import { getLocalStorage } from "@/lib/localStorage";
 export default (): JSX.Element => {
   const [filters, setFilters] = useState<FilteringI>({ ...defaultFilters });
   const [opacity, setOpacity] = useState(0.5);
-  // const [options, setOptions] = useState<FilterOptionsI>(structuredClone(filterOptions));
-  // const [loading, setLoading] = useState(true);
 
   const handleOpacity = (e: React.FormEvent<HTMLInputElement>): void => {
     setOpacity(Number(e.currentTarget.value));

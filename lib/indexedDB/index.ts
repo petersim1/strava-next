@@ -136,6 +136,7 @@ export class DB {
           if (cursor) {
             resolve(cursor.value.start_date_local);
           } else {
+            // means that there isn't data yet. Don't reject it, just resolve with 0.
             resolve(0);
           }
         };

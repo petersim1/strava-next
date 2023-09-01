@@ -15,18 +15,20 @@ export const useDataFetcher = (): DataStateI => {
   });
   // on page refresh, wait until mounted to grab the date of last pull from indexedDB.
   // use this to fetch only those recent activities (if any).
-  // Use throttling to limit the pulling request rate for strava limitation purposes.
+  // Since most recent date is dependent on strava activity, not last search,
+  // throttling explicitly doesn't make sense. Maybe move Throttling logic elsewhere.
   useEffect(() => {
-    const THROTTLING_LIMIT = 1000 * 60; // restrict refetches within 1min.
-    const now = new Date().valueOf();
+    // const THROTTLING_LIMIT = 1000 * 60; // restrict refetches within 1min.
+    // const now = new Date().valueOf();
     const db = new DB("activities");
 
     db.getMostRecent()
       .then((result: number) => {
-        if (now - result >= THROTTLING_LIMIT) {
-          return fetch(`/api/strava/activities?after=${result}`);
-        }
-        throw new RequestError("throttling error", 401);
+        // if (now - result >= THROTTLING_LIMIT) {
+        //   return fetch(`/api/strava/activities?after=${result}`);
+        // }
+        // throw new RequestError("throttling error", 401);
+        return fetch(`/api/strava/activities?after=${result}`);
       })
       .then((response) => {
         if (response.ok) {

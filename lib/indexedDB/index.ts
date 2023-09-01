@@ -115,26 +115,13 @@ export class DB {
     });
   }
 
-  getDataByDate({
-    fromDate,
-    toDate,
-  }: {
-    fromDate?: number;
-    toDate?: number;
-  }): Promise<StravaActivitySimpleI[]> {
-    // I want to be sure to include the entire day in toDate.
-    // new Date("mm/dd/yyyy") will assume midnight, which will exclude all events occuring on that day.
-    // make this new date exclusive.
-    fromDate = fromDate ?? 0;
-    const makeOpen = !!toDate;
-    if (!toDate) {
-      toDate = new Date().valueOf();
-    } else {
-      toDate = toDate + 60 * 60 * 24 * 1000;
-    }
+  getMostRecent(): Promise<number> {
+    // Fetch the most recent observation.
+    // will help limit GET requests to strava, and only be based on data that the client has.
 
     return new Promise((resolve, reject) => {
       const request = this.requestDB();
+      console.log("CALLING MOST RECENT");
 
       request.onsuccess = (): void => {
         const db = request.result;
@@ -142,17 +129,14 @@ export class DB {
         const store = tx.objectStore("datas");
         const index = store.index("date");
 
-        const range = IDBKeyRange.bound(fromDate, toDate, true, makeOpen);
-        const query = index.openCursor(range, "next");
+        const query = index.openCursor(null, "prev");
 
-        const objList: StravaActivitySimpleI[] = [];
         query.onsuccess = (): void => {
           const cursor = query.result;
           if (cursor) {
-            objList.push(cursor.value);
-            cursor.continue();
+            resolve(cursor.value.start_date_local);
           } else {
-            resolve(objList);
+            resolve(0);
           }
         };
 

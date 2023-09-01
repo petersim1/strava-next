@@ -19,7 +19,7 @@ export type StravaActivitySimpleI = {
 
 export enum Stores {
   FILTER = "filtering",
-  DATE = "last_pull",
+  // DATE = "last_pull",
 }
 
 export type FilterOptionsI = {

@@ -2,9 +2,8 @@
 
 import { useEffect, useReducer, useState } from "react";
 import { dataStatusReducer } from "@/lib/reducers";
-import { getLocalStorage, updateLocalStorage } from "@/lib/localStorage";
 import { RequestError } from "@/lib/errors";
-import { Stores, DataStateI, FilteringI, StravaActivitySimpleI, PlotDataI } from "@/types/data";
+import { DataStateI, FilteringI, StravaActivitySimpleI, PlotDataI } from "@/types/data";
 import { decodePolyline } from "@/lib/utils/plotting";
 import { DB } from "@/lib/indexedDB";
 
@@ -14,14 +13,21 @@ export const useDataFetcher = (): DataStateI => {
     loading: true,
     done: false,
   });
-  // on page refresh, wait until mounted to grab the date of last pull from localstorage
-  // use this to fetch only those recent activities (if any), and update  localstorage if fetch succeeded.
+  // on page refresh, wait until mounted to grab the date of last pull from indexedDB.
+  // use this to fetch only those recent activities (if any).
+  // Use throttling to limit the pulling request rate for strava limitation purposes.
   useEffect(() => {
+    const THROTTLING_LIMIT = 1000 * 60; // restrict refetches within 1min.
     const now = new Date().valueOf();
     const db = new DB("activities");
-    const lastPull = getLocalStorage(Stores.DATE);
 
-    fetch(`/api/strava/activities?after=${lastPull}`)
+    db.getMostRecent()
+      .then((result: number) => {
+        if (now - result >= THROTTLING_LIMIT) {
+          return fetch(`/api/strava/activities?after=${result}`);
+        }
+        throw new RequestError("throttling error", 401);
+      })
       .then((response) => {
         if (response.ok) {
           return response.json();
@@ -30,9 +36,6 @@ export const useDataFetcher = (): DataStateI => {
       })
       .then((data) => {
         return db.addData(data);
-      })
-      .then(() => {
-        updateLocalStorage(Stores.DATE, now);
       })
       .catch((error) => {
         console.log(error.message);

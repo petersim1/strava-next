@@ -50,7 +50,7 @@ export const GET = async (request: NextRequest): Promise<NextResponse> => {
   headers.set("Authorization", `Bearer ${accessToken}`);
 
   const baseURL = new URL("https://www.strava.com/api/v3/athlete/activities");
-  baseURL.searchParams.set("per_page", "30");
+  baseURL.searchParams.set("per_page", "50");
 
   const { before, after } = Object.fromEntries(request.nextUrl.searchParams.entries());
 

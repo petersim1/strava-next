@@ -13,6 +13,8 @@ export const signJWTwithInputs = async (
   refresh_token: string,
   expires_at: number,
 ): Promise<string> => {
+  // don't need to multiply exp by 1000 here. jose expects this exact structure.
+  // I'll subtract 10s to be safe...
   const signed = await new SignJWT({
     athlete,
     access_token,
@@ -20,7 +22,7 @@ export const signJWTwithInputs = async (
   })
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
-    .setExpirationTime(expires_at * 1000)
+    .setExpirationTime(expires_at - 10)
     .sign(new TextEncoder().encode(JWT_SECRET));
   return signed;
 };

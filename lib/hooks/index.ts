@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useReducer, useState } from "react";
+import { useEffect, useReducer, useState, Dispatch, SetStateAction } from "react";
 import { dataStatusReducer } from "@/lib/reducers";
-import { getLocalStorage, updateLocalStorage } from "@/lib/localStorage";
 import { RequestError } from "@/lib/errors";
-import { Stores, DataStateI, FilteringI, StravaActivitySimpleI, PlotDataI } from "@/types/data";
+import { defaultFilters } from "@/lib/constants";
+import { DataStateI, FilteringI, StravaActivitySimpleI, PlotDataI, Stores } from "@/types/data";
 import { decodePolyline } from "@/lib/utils/plotting";
 import { DB } from "@/lib/indexedDB";
+import { getLocalStorage } from "@/lib/localStorage";
 
 export const useDataFetcher = (): DataStateI => {
   const [state, dispatch] = useReducer(dataStatusReducer, {
@@ -14,14 +15,17 @@ export const useDataFetcher = (): DataStateI => {
     loading: true,
     done: false,
   });
-  // on page refresh, wait until mounted to grab the date of last pull from localstorage
-  // use this to fetch only those recent activities (if any), and update  localstorage if fetch succeeded.
+  // on page refresh, wait until mounted to grab the date of last pull from indexedDB.
+  // use this to fetch only those recent activities (if any).
   useEffect(() => {
-    const now = new Date().valueOf();
-    const lastPull = getLocalStorage(Stores.DATE);
-    const db = new DB("activities");
+    const db = new DB("strava");
 
-    fetch(`/api/strava/activities?after=${lastPull}`)
+    db.getMostRecent()
+      .then((result: number) => {
+        // it seems strava API is EXCLUSIVE, so I don't need to add 1000ms.
+        // Either way, indexeddb using "put", so duplicated id's won't exist.
+        return fetch(`/api/strava/activities?after=${result}`);
+      })
       .then((response) => {
         if (response.ok) {
           return response.json();
@@ -31,16 +35,13 @@ export const useDataFetcher = (): DataStateI => {
       .then((data) => {
         return db.addData(data);
       })
-      .then(() => {
-        updateLocalStorage(Stores.DATE, now);
-      })
       .catch((error) => {
         console.log(error.message);
         dispatch({ type: "ERROR" });
       })
       .finally(() => {
-        // might need to conditionally update this. If fetch fails, or if indexedDB doesn't update
-        // I probably don't want to mark this as fetched.
+        // Will be marked as DONE no matter what, but error=true if an error occurs.
+        // make sure to check for this in conditional UI renders.
         dispatch({ type: "DONE" });
       });
   }, []);
@@ -60,7 +61,7 @@ export const useDataArrUpdate = ({
 
   useEffect(() => {
     if (!state.done || !filters.activity) return;
-    const db = new DB("activities");
+    const db = new DB("strava");
     let sDate = undefined;
     let tDate = undefined;
     if (filters.startDate) {
@@ -82,4 +83,19 @@ export const useDataArrUpdate = ({
   }, [filters, state.done]);
 
   return data;
+};
+
+export const useLocalStorage = (): {
+  filters: FilteringI;
+  setFilters: Dispatch<SetStateAction<FilteringI>>;
+} => {
+  const [filters, setFilters] = useState<FilteringI>({ ...defaultFilters });
+  useEffect(() => {
+    setFilters(getLocalStorage(Stores.FILTER) as FilteringI);
+  }, []);
+
+  return {
+    filters,
+    setFilters,
+  };
 };

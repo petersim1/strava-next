@@ -12,20 +12,26 @@ export class DB {
     this.initDB();
   }
 
-  initDB(): void {
-    const request = indexedDB.open(this.storeName);
+  requestDB(): IDBOpenDBRequest {
+    return indexedDB.open(this.storeName, this.version);
+  }
 
-    // onupgradeneeded won't exist if version is passed.
+  initDB(): void {
+    const request = this.requestDB();
+
+    // onupgradeneeded will trigger only for new version, or if DB didn't exist.
     request.onupgradeneeded = (): void => {
+      console.log("onupgradeneeded triggered");
       const db = request.result;
 
-      // if the data object store doesn't exist, create it
-      if (!db.objectStoreNames.contains("datas")) {
-        const store = db.createObjectStore("datas", { keyPath: "id" });
-        store.createIndex("sport", "sport_type", { unique: false });
-        store.createIndex("date", "start_date_local", { unique: false });
-        store.createIndex("sport_date", ["sport_type", "start_date_local"], { unique: false });
+      if (db.objectStoreNames.contains("activities")) {
+        // to be safe, I'll just delete the object store upon upgrade.
+        db.deleteObjectStore("activities");
       }
+      const store = db.createObjectStore("activities", { keyPath: "id" });
+      store.createIndex("sport", "sport_type", { unique: false });
+      store.createIndex("date", "start_date", { unique: false });
+      store.createIndex("sport_date", ["sport_type", "start_date"], { unique: false });
     };
 
     request.onsuccess = (): void => {
@@ -38,23 +44,19 @@ export class DB {
     };
   }
 
-  requestDB(): IDBRequest {
-    return indexedDB.open(this.storeName, this.version);
-  }
-
   addData(datas: StravaActivitySimpleI[]): Promise<void> {
     return new Promise((resolve, reject) => {
       const request = this.requestDB();
 
       request.onsuccess = (): void => {
         const db = request.result;
-        const tx = db.transaction("datas", "readwrite");
-        const store = tx.objectStore("datas");
+        const tx = db.transaction("activities", "readwrite");
+        const store = tx.objectStore("activities");
 
         datas.forEach((data) => {
           const d = store.put(data);
           d.onerror = (): void => {
-            reject(new Error(d.error.message));
+            reject(new Error(d.error?.message));
           };
         });
 
@@ -74,86 +76,34 @@ export class DB {
     });
   }
 
-  getDataByKey(key: string): Promise<StravaActivitySimpleI> {
-    return new Promise((resolve, reject) => {
-      const request = this.requestDB();
-
-      request.onsuccess = (): void => {
-        const db = request.result;
-        const tx = db.transaction("datas", "readonly");
-        const store = tx.objectStore("datas");
-
-        const query = store.get(key);
-
-        query.onsuccess = (): void => {
-          if (query.result === undefined) {
-            reject(new Error("no data exists"));
-          }
-          resolve(query.result);
-        };
-
-        query.onerror = (): void => {
-          reject(new Error(query.error.message));
-        };
-
-        tx.oncomplete = (): void => {
-          db.close();
-        };
-
-        tx.onerror = (): void => {
-          reject(new Error(tx.error?.message));
-        };
-      };
-
-      request.onerror = (): void => {
-        reject(new Error(request.error?.message));
-      };
-    });
-  }
-
-  getDataByDate({
-    fromDate,
-    toDate,
-  }: {
-    fromDate?: number;
-    toDate?: number;
-  }): Promise<StravaActivitySimpleI[]> {
-    // I want to be sure to include the entire day in toDate.
-    // new Date("mm/dd/yyyy") will assume midnight, which will exclude all events occuring on that day.
-    // make this new date exclusive.
-    fromDate = fromDate ?? 0;
-    const makeOpen = !!toDate;
-    if (!toDate) {
-      toDate = new Date().valueOf();
-    } else {
-      toDate = toDate + 60 * 60 * 24 * 1000;
-    }
+  getMostRecent(): Promise<number> {
+    // Fetch the most recent observation.
+    // will help limit GET requests to strava, and only be based on data that the client has.
 
     return new Promise((resolve, reject) => {
       const request = this.requestDB();
 
       request.onsuccess = (): void => {
         const db = request.result;
-        const tx = db.transaction("datas", "readonly");
-        const store = tx.objectStore("datas");
+        const tx = db.transaction("activities", "readonly");
+        const store = tx.objectStore("activities");
         const index = store.index("date");
 
-        const range = IDBKeyRange.bound(fromDate, toDate, true, makeOpen);
-        const query = index.openCursor(range, "next");
+        const query = index.openCursor(null, "prev");
 
-        const objList: StravaActivitySimpleI[] = [];
         query.onsuccess = (): void => {
           const cursor = query.result;
           if (cursor) {
-            objList.push(cursor.value);
-            cursor.continue();
+            // only care about first instance. Don't need cursor.continue().
+            resolve(cursor.value.start_date);
           } else {
-            resolve(objList);
+            // means that there isn't data yet. Don't reject it, just resolve with 0.
+            resolve(0);
           }
         };
 
         query.onerror = (): void => {
-          reject(new Error(query.error.message));
+          reject(new Error(query.error?.message));
         };
 
         tx.oncomplete = (): void => {
@@ -193,12 +143,12 @@ export class DB {
 
       request.onsuccess = (): void => {
         const db = request.result;
-        const tx = db.transaction("datas", "readonly");
-        const store = tx.objectStore("datas");
+        const tx = db.transaction("activities", "readonly");
+        const store = tx.objectStore("activities");
         const index = store.index("sport_date");
 
         const range = IDBKeyRange.bound([sportType, fromDate], [sportType, toDate], true, makeOpen);
-        const query = index.openCursor(range, "next");
+        const query = index.openCursor(range, "prev");
 
         const objList: StravaActivitySimpleI[] = [];
         query.onsuccess = (): void => {
@@ -212,7 +162,7 @@ export class DB {
         };
 
         query.onerror = (): void => {
-          reject(new Error(query.error.message));
+          reject(new Error(query.error?.message));
         };
 
         tx.oncomplete = (): void => {
@@ -222,55 +172,6 @@ export class DB {
         tx.onerror = (): void => {
           reject(new Error(tx.error?.message));
         };
-      };
-      request.onerror = (): void => {
-        reject(new Error(request.error?.message));
-      };
-    });
-  }
-
-  getDistinctKeys(indexName: string): Promise<string[]> {
-    return new Promise((resolve, reject) => {
-      const request = this.requestDB();
-
-      request.onsuccess = (): void => {
-        const db = request.result;
-        const tx = db.transaction("datas", "readonly");
-        const store = tx.objectStore("datas");
-        const index = store.index(indexName);
-
-        // const query = index.getAll();
-        const query = index.openCursor(undefined, "nextunique");
-
-        const keys: string[] = [];
-        query.onsuccess = (): void => {
-          const cursor: IDBCursor = query.result;
-          if (cursor) {
-            keys.push(cursor.key as string);
-            cursor.continue();
-          } else {
-            resolve(keys);
-          }
-        };
-
-        query.onerror = (): void => {
-          reject(new Error(query.error.message));
-        };
-
-        tx.oncomplete = (): void => {
-          db.close();
-        };
-
-        tx.onerror = (): void => {
-          reject(new Error(tx.error?.message));
-        };
-
-        // query.onsuccess = (): void => {
-        //   const keys: Set<string> = new Set(
-        //     query.result.map((res: StravaActivitySimpleI) => res.sportType),
-        //   );
-        //   resolve(Array.from(keys));
-        // };
       };
       request.onerror = (): void => {
         reject(new Error(request.error?.message));
@@ -284,8 +185,8 @@ export class DB {
 
       request.onsuccess = (): void => {
         const db = request.result;
-        const tx = db.transaction("datas", "readwrite");
-        const store = tx.objectStore("datas");
+        const tx = db.transaction("activities", "readwrite");
+        const store = tx.objectStore("activities");
         const deleteReq = store.clear();
 
         deleteReq.onsuccess = (): void => {

@@ -9,6 +9,7 @@ export type FilteringI = {
 export type StravaActivitySimpleI = {
   id: string;
   sport_type: string;
+  start_date: number;
   start_date_local: number;
   map: StravaMapI;
   name: string;
@@ -19,7 +20,7 @@ export type StravaActivitySimpleI = {
 
 export enum Stores {
   FILTER = "filtering",
-  DATE = "last_pull",
+  // DATE = "last_pull",
 }
 
 export type FilterOptionsI = {
@@ -45,6 +46,7 @@ export type CoordinatesI = {
 export type PlotDataI = {
   id: string;
   sport_type: string;
+  start_date: number;
   start_date_local: number;
   name: string;
   distance: number;

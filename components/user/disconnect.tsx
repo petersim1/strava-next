@@ -10,7 +10,7 @@ export default (): JSX.Element => {
   const router = useRouter();
 
   const handleLogout = (): void => {
-    const db = new DB("activities");
+    const db = new DB("strava");
     fetch("/api/auth/logout", { method: "POST" })
       .then((response) => {
         if (response.ok) {
@@ -20,7 +20,6 @@ export default (): JSX.Element => {
       })
       .then((ok) => {
         if (ok) {
-          clearLocalStorage(Stores.DATE);
           clearLocalStorage(Stores.FILTER);
           return;
         }

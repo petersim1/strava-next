@@ -1,11 +1,13 @@
 "use client";
 
-import { useEffect, useReducer, useState } from "react";
+import { useEffect, useReducer, useState, Dispatch, SetStateAction } from "react";
 import { dataStatusReducer } from "@/lib/reducers";
 import { RequestError } from "@/lib/errors";
-import { DataStateI, FilteringI, StravaActivitySimpleI, PlotDataI } from "@/types/data";
+import { defaultFilters } from "@/lib/constants";
+import { DataStateI, FilteringI, StravaActivitySimpleI, PlotDataI, Stores } from "@/types/data";
 import { decodePolyline } from "@/lib/utils/plotting";
 import { DB } from "@/lib/indexedDB";
+import { getLocalStorage } from "@/lib/localStorage";
 
 export const useDataFetcher = (): DataStateI => {
   const [state, dispatch] = useReducer(dataStatusReducer, {
@@ -81,4 +83,19 @@ export const useDataArrUpdate = ({
   }, [filters, state.done]);
 
   return data;
+};
+
+export const useLocalStorage = (): {
+  filters: FilteringI;
+  setFilters: Dispatch<SetStateAction<FilteringI>>;
+} => {
+  const [filters, setFilters] = useState<FilteringI>({ ...defaultFilters });
+  useEffect(() => {
+    setFilters(getLocalStorage(Stores.FILTER) as FilteringI);
+  }, []);
+
+  return {
+    filters,
+    setFilters,
+  };
 };

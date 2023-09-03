@@ -7,7 +7,7 @@ export class DB {
 
   constructor(storeName: string, version?: number) {
     this.storeName = storeName;
-    this.version = version || 3;
+    this.version = version || 1;
 
     this.initDB();
   }
@@ -35,9 +35,7 @@ export class DB {
     };
 
     request.onsuccess = (): void => {
-      console.log("db success");
       const db = request.result;
-      console.log(db.version);
       this.version = db.version;
     };
 

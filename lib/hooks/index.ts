@@ -15,19 +15,13 @@ export const useDataFetcher = (): DataStateI => {
   });
   // on page refresh, wait until mounted to grab the date of last pull from indexedDB.
   // use this to fetch only those recent activities (if any).
-  // Since most recent date is dependent on strava activity, not last search,
-  // throttling explicitly doesn't make sense. Maybe move Throttling logic elsewhere.
   useEffect(() => {
-    // const THROTTLING_LIMIT = 1000 * 60; // restrict refetches within 1min.
-    // const now = new Date().valueOf();
-    const db = new DB("activities");
+    const db = new DB("strava");
 
     db.getMostRecent()
       .then((result: number) => {
-        // if (now - result >= THROTTLING_LIMIT) {
-        //   return fetch(`/api/strava/activities?after=${result}`);
-        // }
-        // throw new RequestError("throttling error", 401);
+        // it seems strava API is EXCLUSIVE, so I don't need to add 1000ms.
+        // Either way, indexeddb using "put", so duplicated id's won't exist.
         return fetch(`/api/strava/activities?after=${result}`);
       })
       .then((response) => {
@@ -65,7 +59,7 @@ export const useDataArrUpdate = ({
 
   useEffect(() => {
     if (!state.done || !filters.activity) return;
-    const db = new DB("activities");
+    const db = new DB("strava");
     let sDate = undefined;
     let tDate = undefined;
     if (filters.startDate) {

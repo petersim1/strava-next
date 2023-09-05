@@ -73,7 +73,9 @@ export const useDataArrUpdate = ({
 
     db.getDataFilter({ sportType: filters.activity, fromDate: sDate, toDate: tDate })
       .then((results: StravaActivitySimpleI[]) => {
-        const decoded = results.map((d) => decodePolyline(d));
+        const decoded = results
+          .filter((d) => !!d.map.summary_polyline)
+          .map((d) => decodePolyline(d));
         setData(decoded);
       })
       .catch((error) => {

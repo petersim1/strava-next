@@ -31,7 +31,6 @@ export default ({
   const handleSubmit = (event: React.ChangeEvent<HTMLFormElement>): void => {
     event.preventDefault();
     const formData = Object.fromEntries(new FormData(event.target));
-    console.log(formData);
     updateLocalStorage(Stores.FILTER, formData as FilteringI);
     setFilters(formData as FilteringI);
   };

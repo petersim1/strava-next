@@ -29,6 +29,61 @@ const getBoxedExtent = (data: CoordinatesI[]): [number, number][] => {
   return [xExt, yExt];
 };
 
+const isOverlap = (coords1: CoordinatesI[], coords2: CoordinatesI[]): boolean => {
+  const [xExt1, yExt1] = getBoundingBox(coords1);
+  const [xExt2, yExt2] = getBoundingBox(coords2);
+
+  if (xExt1[0] > xExt2[1] || xExt1[1] < xExt2[0]) return false;
+  if (yExt1[1] < yExt2[0] || yExt1[0] > yExt2[1]) return false;
+
+  return true;
+};
+
+export const findLinks = (data: PlotDataI[]): { [key: number]: number[] } => {
+  const links: { [key: number]: number[] } = {};
+  [...Array(data.length)]
+    .map((_, i) => i)
+    .forEach((ind) => {
+      links[ind as keyof typeof links] = [];
+      [...Array(data.length)]
+        .map((_, i) => i)
+        .slice(ind + 1, data.length)
+        .forEach((ind2) => {
+          if (isOverlap(data[ind].coordinates, data[ind2].coordinates)) {
+            links[ind].push(ind2);
+          }
+        });
+    });
+  return links;
+};
+
+export const getGroupings = (data: PlotDataI[]): number[][] => {
+  const groups: Set<number>[] = [];
+
+  const links = findLinks(data);
+
+  Object.entries(links).forEach(([key, values]) => {
+    let found = false;
+    let foundInd = 0;
+    [...Array(groups.length)].forEach((_, ind) => {
+      if (groups[ind].has(Number(key))) {
+        found = true;
+        foundInd = ind;
+      }
+    });
+    if (!found) {
+      groups.push(new Set());
+      foundInd = groups.length - 1;
+      groups[foundInd].add(Number(key));
+    }
+    values.forEach((value) => {
+      groups[foundInd].add(value);
+    });
+  });
+
+  return groups.map((group) => Array.from(group));
+};
+
 export const createViz = (
   plotHolder: d3.Selection<null, unknown, null, undefined>,
   data: PlotDataI[],

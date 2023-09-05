@@ -4,7 +4,7 @@ import { useRef, useEffect } from "react";
 import { select } from "d3";
 
 import { PlotDataI, DataStateI } from "@/types/data";
-import { createViz } from "@/lib/utils/plotting";
+import { createViz, getGroupings } from "@/lib/utils/plotting";
 import Loader from "../layout/loader";
 import styles from "./styled.module.css";
 
@@ -24,6 +24,7 @@ export default ({
 
     svg.selectAll("*").remove(); // remove current SVG so we can start fresh each run.
     if (plotData.length > 0) {
+      console.log(getGroupings(plotData));
       createViz(svg, plotData, opacity);
     }
   }, [plotData, opacity]);

@@ -8,15 +8,19 @@ import styles from "./styled.module.css";
 export default ({
   filters,
   loading,
-  setFilters,
   opacity,
+  boxIndex,
+  setFilters,
   handleOpacity,
+  handleBoxIndex,
 }: {
   filters: FilteringI;
   loading: boolean;
-  setFilters: Dispatch<SetStateAction<FilteringI>>;
   opacity: number;
+  boxIndex: number;
+  setFilters: Dispatch<SetStateAction<FilteringI>>;
   handleOpacity: (e: FormEvent<HTMLInputElement>) => void;
+  handleBoxIndex: (type: string) => void;
 }): JSX.Element => {
   // setting a defaultValue wasn't working as expected,
   // likely because it's mounting before having access to localstorage states.
@@ -79,18 +83,32 @@ export default ({
         ))}
         <button type="submit">submit</button>
       </form>
-      <div>
-        <label htmlFor="opacity">Adjust Brightness</label>
-        <input
-          name="opacity"
-          type="range"
-          disabled={loading}
-          min={0}
-          max={1}
-          step={0.05}
-          value={opacity}
-          onChange={handleOpacity}
-        />
+      <div className={styles.toggles}>
+        <div>
+          <label htmlFor="opacity">Adjust Brightness</label>
+          <input
+            name="opacity"
+            type="range"
+            disabled={loading}
+            min={0}
+            max={1}
+            step={0.05}
+            value={opacity}
+            onChange={handleOpacity}
+          />
+        </div>
+        <div className={styles.box_toggle}>
+          <div>Toggle Region</div>
+          <div className={styles.box_toggle_btns}>
+            <div onClick={(): void => handleBoxIndex("DOWN")} className={styles.btn}>
+              {"<"}
+            </div>
+            <div>{boxIndex + 1}</div>
+            <div onClick={(): void => handleBoxIndex("UP")} className={styles.btn}>
+              {">"}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

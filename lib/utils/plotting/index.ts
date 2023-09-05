@@ -81,7 +81,7 @@ export const getGroupings = (data: PlotDataI[]): number[][] => {
     });
   });
 
-  return groups.map((group) => Array.from(group));
+  return groups.map((group) => Array.from(group)).sort((a, b) => (a.length < b.length ? 0 : -1));
 };
 
 export const createViz = (

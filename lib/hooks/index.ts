@@ -5,7 +5,7 @@ import { dataStatusReducer } from "@/lib/reducers";
 import { RequestError } from "@/lib/errors";
 import { defaultFilters } from "@/lib/constants";
 import { DataStateI, FilteringI, StravaActivitySimpleI, PlotDataI, Stores } from "@/types/data";
-import { decodePolyline } from "@/lib/utils/plotting";
+import { decodePolyline, getGroupings } from "@/lib/utils/plotting";
 import { DB } from "@/lib/indexedDB";
 import { getLocalStorage } from "@/lib/localStorage";
 
@@ -55,9 +55,10 @@ export const useDataArrUpdate = ({
 }: {
   state: DataStateI;
   filters: FilteringI;
-}): PlotDataI[] => {
+}): [PlotDataI[], number[][]] => {
   // whenever the filters are updated, or the fetch state is done, grab associated data from indexedDB.
   const [data, setData] = useState<PlotDataI[]>([]);
+  const [groupings, setGroupings] = useState<number[][]>([]);
 
   useEffect(() => {
     if (!state.done || !filters.activity) return;
@@ -76,7 +77,9 @@ export const useDataArrUpdate = ({
         const decoded = results
           .filter((d) => !!d.map.summary_polyline)
           .map((d) => decodePolyline(d));
+        const groups = getGroupings(decoded);
         setData(decoded);
+        setGroupings(groups);
       })
       .catch((error) => {
         console.log(error);
@@ -84,7 +87,7 @@ export const useDataArrUpdate = ({
       });
   }, [filters, state.done]);
 
-  return data;
+  return [data, groupings];
 };
 
 export const useLocalStorage = (): {

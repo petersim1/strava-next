@@ -5,6 +5,8 @@ import { defaultFilters } from "@/lib/constants";
 export const getLocalStorage = (key: Stores): FilteringI | number => {
   const filter = localStorage.getItem(key);
 
+  console.log(JSON.stringify(defaultFilters));
+
   if (!filter) {
     // set localstorage to default if it hasn't been created yet.
     if (key === Stores.FILTER) {

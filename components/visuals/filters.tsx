@@ -33,6 +33,7 @@ export default ({
   const handleSubmit = (event: React.ChangeEvent<HTMLFormElement>): void => {
     event.preventDefault();
     const formData = Object.fromEntries(new FormData(event.target));
+    formData.opacity = filters.opacity;
     updateLocalStorage(Stores.FILTER, formData as FilteringI);
     setFilters(formData as FilteringI);
   };
@@ -91,7 +92,7 @@ export default ({
             min={0}
             max={1}
             step={0.05}
-            value={filters.opacity}
+            value={filters.opacity ?? 0.5}
             onChange={handleOpacity}
           />
         </div>

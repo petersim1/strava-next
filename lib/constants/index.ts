@@ -25,6 +25,7 @@ export const defaultFilters = {
   activity: "",
   startDate: "",
   endDate: "",
+  opacity: "0.5",
 };
 
 export const mockIdbData = [

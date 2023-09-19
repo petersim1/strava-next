@@ -4,6 +4,7 @@ export type FilteringI = {
   activity: string;
   startDate: string;
   endDate: string;
+  opacity: string;
 };
 
 export type StravaActivitySimpleI = {

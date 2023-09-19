@@ -8,7 +8,6 @@ import styles from "./styled.module.css";
 export default ({
   filters,
   loading,
-  opacity,
   boxIndex,
   setFilters,
   handleOpacity,
@@ -16,7 +15,6 @@ export default ({
 }: {
   filters: FilteringI;
   loading: boolean;
-  opacity: number;
   boxIndex: number;
   setFilters: Dispatch<SetStateAction<FilteringI>>;
   handleOpacity: (e: FormEvent<HTMLInputElement>) => void;
@@ -93,7 +91,7 @@ export default ({
             min={0}
             max={1}
             step={0.05}
-            value={opacity}
+            value={filters.opacity}
             onChange={handleOpacity}
           />
         </div>

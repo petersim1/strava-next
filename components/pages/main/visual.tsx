@@ -6,10 +6,11 @@ import Plot from "@/components/visuals/plot";
 import Filters from "@/components/visuals/filters";
 import Panel from "@/components/visuals/panel";
 import { useDataFetcher, useDataArrUpdate, useLocalStorage } from "@/lib/hooks";
+import { updateLocalStorage } from "@/lib/localStorage";
+import { FilteringI, Stores } from "@/types/data";
 import styles from "../styled.module.css";
 
 export default (): JSX.Element => {
-  const [opacity, setOpacity] = useState(0.5);
   const [boxIndex, setBoxIndex] = useState(0);
 
   const { filters, setFilters } = useLocalStorage();
@@ -18,7 +19,9 @@ export default (): JSX.Element => {
   const [plotData, groupings] = useDataArrUpdate({ state: dataState, filters: filters });
 
   const handleOpacity = (e: React.FormEvent<HTMLInputElement>): void => {
-    setOpacity(Number(e.currentTarget.value));
+    const newFilter = { ...filters, opacity: e.currentTarget.value.toString() };
+    updateLocalStorage(Stores.FILTER, newFilter as FilteringI);
+    setFilters(newFilter);
   };
 
   const handleBoxIndex = (type: string): void => {
@@ -46,15 +49,19 @@ export default (): JSX.Element => {
       <Plot
         plotData={plotData}
         dataState={dataState}
-        opacity={opacity}
+        opacity={Number(filters.opacity)}
         groupings={groupings}
         boxIndex={boxIndex}
       />
-      <Panel plotData={plotData} opacity={opacity} groupings={groupings} boxIndex={boxIndex} />
+      <Panel
+        plotData={plotData}
+        opacity={Number(filters.opacity)}
+        groupings={groupings}
+        boxIndex={boxIndex}
+      />
       <Filters
         filters={filters}
         loading={dataState.loading}
-        opacity={opacity}
         boxIndex={boxIndex}
         setFilters={setFilters}
         handleOpacity={handleOpacity}

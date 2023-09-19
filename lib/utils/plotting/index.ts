@@ -69,6 +69,13 @@ export const getGroupings = (data: PlotDataI[]): number[][] => {
       if (groups[ind].has(Number(key))) {
         found = true;
         foundInd = ind;
+      } else {
+        values.forEach((value) => {
+          if (groups[ind].has(Number(value))) {
+            found = true;
+            foundInd = ind;
+          }
+        });
       }
     });
     if (!found) {
@@ -120,24 +127,29 @@ export const createViz = (
     return svgMain;
   };
 
-  const genLines = (svg: d3.Selection<SVGGElement, unknown, null, unknown>): void => {
+  const genLines = (
+    svg: d3.Selection<SVGGElement, unknown, null, unknown>,
+  ): d3.Selection<SVGPathElement | d3.BaseType, PlotDataI, SVGGElement, unknown> => {
     const line = d3
       .line<CoordinatesI>()
       .x((d) => x(d.x))
       .y((d) => y(d.y));
-    svg
+    const paths = svg
       .append("g")
-      .selectAll("line")
+      .selectAll("path")
       .data(data)
+      // .join("a")
+      // .attr("href", (d) => `https://strava.com/activities/${d.id}`)
+      // .attr("target", "_blank")
+      // .attr("refferer-policy", "no-referrer")
+      // .append("path")
       .join("path")
-      // .attr("stroke", "var(--strava-orange)")
       .attr("stroke", "#ff9e0c")
-      // .attr("stroke", (_, i) => colors(i))
       .attr("data-index", (d) => d.id)
       .attr("stroke-width", "4px")
       .style("opacity", opacity)
-      // .style("transition", "all 0.25s ease-in-out")
       .attr("d", (d) => line(d.coordinates));
+    return paths;
   };
 
   const svg = genSVG();

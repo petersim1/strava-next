@@ -50,7 +50,6 @@ export const decodePolyline = (data: StravaActivitySimpleI, precision = 5): Plot
     lng += longitudeChange;
 
     const [x, y] = projection([lng / factor, -lat / factor]) || [0, 0];
-    if (x == 0) console.log(x, y);
 
     // reversing order gets me [x,y] more accurately.
     coordinates.push({ x, y });

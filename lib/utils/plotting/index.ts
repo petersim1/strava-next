@@ -35,7 +35,9 @@ export const createViz = (
     .attr("height", plottingProps.height)
     .attr("viewBox", [0, 0, plottingProps.width, plottingProps.height])
     .style("max-height", "100%")
-    .style("max-width", "100%")
+    .style("max-width", "100%");
+
+  const dataGEl = svg
     .append("g")
     .attr("transform", `translate(${plottingProps.margin.left},${plottingProps.margin.top})`);
 
@@ -44,7 +46,7 @@ export const createViz = (
     .x((d) => x(d.x))
     .y((d) => y(d.y));
 
-  const paths = svg
+  const paths = dataGEl
     .append("g")
     .selectAll("path")
     .data(data)
@@ -61,7 +63,20 @@ export const createViz = (
     .style("opacity", opacity)
     .attr("d", (d) => line(d.coordinates));
 
-  svg
+  const text = svg
+    .append("text")
+    .attr("x", plottingProps.width)
+    .attr("y", 0)
+    .attr("width", 200)
+    .attr("height", 20)
+    .attr("text-anchor", "end")
+    .attr("stroke", "currentColor")
+    .attr("fill", "currentColor")
+    .attr("dy", "30px")
+    .style("font", "bold 30px sans-serif")
+    .text("");
+
+  dataGEl
     .append("rect")
     .attr("height", y(yExt[0]) - y(yExt[1]))
     .attr("width", x(xExt[1]) - x(xExt[0]))
@@ -83,10 +98,12 @@ export const createViz = (
         .filter((_, i) => i !== ind)
         .transition()
         .call(deactivate, 250, opacity, true);
+      text.text(data[ind || 0].id);
     })
     .on("mouseout", () => {
       // force all to deactivated position.
       paths.transition().call(deactivate, 250, opacity, true);
+      text.text("");
     })
     .on("touchstart", (e) => e.preventDefault());
 };

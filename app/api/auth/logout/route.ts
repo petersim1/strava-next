@@ -7,7 +7,7 @@ import { RequestError } from "@/lib/errors";
 
 export const POST = async (request: NextRequest): Promise<NextResponse> => {
   const { cookies } = request;
-  const { value: token } = cookies.get("token") ?? { value: undefined };
+  const { value: token } = cookies.get("X-STRAVA-JWT") ?? { value: undefined };
   if (!token) {
     return NextResponse.json({ ok: false }, { status: 401 });
   }
@@ -29,7 +29,7 @@ export const POST = async (request: NextRequest): Promise<NextResponse> => {
       const revokedToken = result.access_token;
       if (revokedToken === accessToken) {
         const res = NextResponse.json({ ok: true });
-        res.cookies.delete("token");
+        res.cookies.delete("X-STRAVA-JWT");
         return res;
       }
       throw new RequestError("Token mismatch", 500);

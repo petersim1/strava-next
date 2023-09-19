@@ -6,7 +6,7 @@ import { JWTtoSignI } from "@/types/auth";
 
 export const GET = async (): Promise<NextResponse> => {
   const cookieStore = cookies();
-  const { value: token } = cookieStore.get("token") ?? { value: undefined };
+  const { value: token } = cookieStore.get("X-STRAVA-JWT") ?? { value: undefined };
   if (!token) {
     return NextResponse.json({});
   }

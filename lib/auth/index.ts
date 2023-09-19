@@ -40,6 +40,8 @@ export const refreshToken = (token: string): Promise<StravaOauthI> => {
   urlUse.searchParams.set("grant_type", "refresh_token");
   urlUse.searchParams.set("refresh_token", refresh_token);
 
+  console.log(urlUse);
+
   return fetch(urlUse, { method: "POST" })
     .then((response) => {
       if (response.ok) {

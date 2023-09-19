@@ -37,7 +37,7 @@ export const GET = async (request: NextRequest): Promise<NextResponse> => {
     })
     .then((token) => {
       const res = NextResponse.redirect(redirectUrl);
-      res.cookies.set("token", token);
+      res.cookies.set("X-STRAVA-JWT", token);
       return res;
     })
     .catch((err: RequestError) => {

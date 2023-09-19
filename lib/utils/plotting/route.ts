@@ -1,7 +1,11 @@
 /* eslint-disable no-constant-condition */
+import { geoMercator } from "d3";
 import { PlotDataI, StravaActivitySimpleI, CoordinatesI } from "@/types/data";
 
 export const decodePolyline = (data: StravaActivitySimpleI, precision = 5): PlotDataI => {
+  // Returns the geoMercator projection of the decoded polyline coordinates.
+  const projection = geoMercator();
+  // const projection = geoEquirectangular();
   const coordinates: CoordinatesI[] = [];
   const factor = Math.pow(10, Number.isInteger(precision) ? precision : 5);
   let index = 0,
@@ -45,11 +49,10 @@ export const decodePolyline = (data: StravaActivitySimpleI, precision = 5): Plot
     lat += latitudeChange;
     lng += longitudeChange;
 
+    const [x, y] = projection([lng / factor, -lat / factor]) || [0, 0];
+
     // reversing order gets me [x,y] more accurately.
-    coordinates.push({
-      x: lng / factor,
-      y: lat / factor,
-    });
+    coordinates.push({ x, y });
   }
 
   return {

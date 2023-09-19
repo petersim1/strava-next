@@ -39,7 +39,7 @@ const dataRecursion = (
 
 export const GET = async (request: NextRequest): Promise<NextResponse> => {
   const cookieStore = cookies();
-  const { value: token } = cookieStore.get("token") ?? { value: undefined };
+  const { value: token } = cookieStore.get("X-STRAVA-JWT") ?? { value: undefined };
   if (!token) {
     return NextResponse.json([], { status: 401 });
   }

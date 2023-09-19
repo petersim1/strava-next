@@ -11,7 +11,7 @@ export const middleware = async (request: NextRequest): Promise<NextResponse> =>
   // Don't want to get to a state where the user is logged in for a long duration,
   // their token expired, and we go to call the API. This middleware will make sure
   // that all requests to the api + pages have updated tokens.
-  const { value: token } = request.cookies.get("token") ?? { value: undefined };
+  const { value: token } = request.cookies.get("X-STRAVA-JWT") ?? { value: undefined };
   const response = NextResponse.next();
 
   if (!token) {
@@ -23,7 +23,7 @@ export const middleware = async (request: NextRequest): Promise<NextResponse> =>
     await jwtVerify(token, new TextEncoder().encode(JWT_SECRET));
   } catch (error) {
     const newToken = await refreshAndSign(token);
-    response.cookies.set("token", newToken);
+    response.cookies.set("X-STRAVA-JWT", newToken);
   }
 
   return response;

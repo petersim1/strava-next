@@ -72,8 +72,8 @@ export const mockIdbData = [
 ];
 
 export const plottingProps = {
-  width: 2000,
-  height: 1500,
+  width: 1000,
+  height: 1000,
   margin: {
     top: 100,
     bottom: 100,

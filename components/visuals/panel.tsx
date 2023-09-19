@@ -1,8 +1,9 @@
 import { useMemo } from "react";
-import { select, easeLinear } from "d3";
+import { select } from "d3";
 
 import { PlotDataI } from "@/types/data";
 import styles from "./styled.module.css";
+import { activate, deactivate } from "@/lib/utils/plotting/animate";
 
 export default ({
   plotData,
@@ -22,25 +23,12 @@ export default ({
 
   const handleEnter = (e: React.MouseEvent<HTMLDivElement>): void => {
     const { index } = e.currentTarget.dataset;
-    select(`path[data-index='${index}']`)
-      .raise()
-      .transition()
-      .duration(250)
-      .ease(easeLinear)
-      .style("opacity", 1)
-      .style("transform", "translate(0, -20px)")
-      .attr("stroke", "white");
+    select(`path[data-index='${index}']`).raise().transition().call(activate, 250, true);
   };
 
   const handleExit = (e: React.MouseEvent<HTMLDivElement>): void => {
     const { index } = e.currentTarget.dataset;
-    select(`path[data-index='${index}']`)
-      .transition()
-      .duration(250)
-      .ease(easeLinear)
-      .style("opacity", opacity)
-      .style("transform", "translate(0, 0)")
-      .attr("stroke", "#ff9e0c");
+    select(`path[data-index='${index}']`).transition().call(deactivate, 250, opacity, true);
   };
 
   return (

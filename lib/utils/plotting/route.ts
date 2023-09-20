@@ -3,7 +3,7 @@ import { geoEquirectangular } from "d3";
 import { PlotDataI, StravaActivitySimpleI, CoordinatesI } from "@/types/data";
 
 export const decodePolyline = (data: StravaActivitySimpleI, precision = 5): PlotDataI => {
-  // Returns the geoMercator projection of the decoded polyline coordinates.
+  // Returns the projection of the decoded polyline coordinates.
   // const projection = geoMercator();
   const projection = geoEquirectangular();
   const coordinates: CoordinatesI[] = [];

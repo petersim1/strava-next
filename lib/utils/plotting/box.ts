@@ -9,6 +9,8 @@ export const getBoundingBox = (data: CoordinatesI[]): [[number, number], [number
 };
 
 export const getBoxedExtent = (data: CoordinatesI[]): [number, number][] => {
+  // Finds the bounding box then pads the axis with smaller range
+  // such that we get a square of boxed extents.
   const [xExt, yExt] = getBoundingBox(data);
 
   const xDiff = xExt[1] - xExt[0];

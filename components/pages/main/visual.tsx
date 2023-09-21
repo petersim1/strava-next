@@ -40,6 +40,24 @@ export default (): JSX.Element => {
   };
 
   return (
+    <>
+      <Panel
+        plotData={plotData}
+        opacity={Number(filters.opacity)}
+        groupings={groupings}
+        boxIndex={boxIndex}
+      />
+      <Plot
+        plotData={plotData}
+        dataState={dataState}
+        opacity={Number(filters.opacity)}
+        groupings={groupings}
+        boxIndex={boxIndex}
+      />
+    </>
+  );
+
+  return (
     <div className={styles.visual_holder}>
       {dataState.done && (
         <div style={{ gridRow: "1 / 2", gridColumn: "2 / 3", alignSelf: "flex-start" }}>

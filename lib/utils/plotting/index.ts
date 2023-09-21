@@ -81,7 +81,6 @@ export const createViz = (
       // get the pointer event's coordinates.
       // find the index within the data array with the smallest distance (hypotenuse).
       const [xm, ym] = d3.pointer(e);
-      console.log(xm, ym);
       const ind = d3.leastIndex(data, ({ coordinates }) =>
         d3.min(coordinates, (d) =>
           Math.hypot(
@@ -92,16 +91,14 @@ export const createViz = (
           ),
         ),
       );
-      paths
-        .filter((_, i) => i === ind)
-        .raise()
-        .transition()
-        .call(activate, 100, true);
-      paths
-        .filter((_, i) => i !== ind)
-        .transition()
-        .call(deactivate, 100, opacity, true);
-      text.text(data[ind || 0].id);
+      paths.each(function (_, i) {
+        if (i === ind) {
+          d3.select(this).raise().transition().call(activate, 100, true);
+        } else {
+          d3.select(this).transition().call(deactivate, 100, opacity, true);
+        }
+      });
+      text.text(ind ? data[ind].id : "");
     })
     .on("mouseout", () => {
       // force all to deactivated position.

@@ -1,5 +1,6 @@
 import Image from "next/image";
 
+import Logo from "@/components/assets/logo";
 import styles from "./styled.module.css";
 
 export default (): JSX.Element => {
@@ -12,6 +13,7 @@ export default (): JSX.Element => {
         <div>
           <Image src="/next.svg" fill={true} sizes="any" alt="nextjs logo" />
         </div>
+        <Logo />
       </div>
     </footer>
   );

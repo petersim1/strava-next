@@ -41,7 +41,7 @@ export default ({
     <div className={styles.filters}>
       <form onSubmit={handleSubmit}>
         {Object.entries(filterOptions).map(([key, option], ind) => (
-          <div key={ind}>
+          <div key={ind} className={option.type === "select" ? styles.wide : styles.small}>
             <label htmlFor={key}>{option.name}</label>
             {option.type === "select" && (
               <select
@@ -74,7 +74,9 @@ export default ({
             )}
           </div>
         ))}
-        <button type="submit">submit</button>
+        <button type="submit" className={styles.submit}>
+          submit
+        </button>
       </form>
     </div>
   );

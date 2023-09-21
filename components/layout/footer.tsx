@@ -8,7 +8,7 @@ export default (): JSX.Element => {
     <footer className={styles.footer}>
       <div className={styles.built_by}>
         <p>
-          By <b>Peter Simone</b> using
+          Built by <b>Peter Simone</b> using
         </p>
         <div>
           <Image src="/next.svg" fill={true} sizes="any" alt="nextjs logo" />

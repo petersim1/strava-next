@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, FormEvent } from "react";
+import { Dispatch, SetStateAction } from "react";
 
 import { PlotDataI, FilteringI } from "@/types/data";
 import styles from "./styled.module.css";
@@ -12,7 +12,6 @@ export default ({
   filters,
   loading,
   setFilters,
-  handleOpacity,
   handleEnter,
   handleExit,
 }: {
@@ -22,7 +21,6 @@ export default ({
   filters: FilteringI;
   loading: boolean;
   setFilters: Dispatch<SetStateAction<FilteringI>>;
-  handleOpacity: (e: FormEvent<HTMLInputElement>) => void;
   handleEnter: (e: React.MouseEvent<HTMLDivElement>) => void;
   handleExit: (e: React.MouseEvent<HTMLDivElement>) => void;
 }): JSX.Element => {
@@ -33,12 +31,7 @@ export default ({
         <p>Regions Detected: {dataNumRegions}</p>
       </div>
       <Activities data={data} handleEnter={handleEnter} handleExit={handleExit} />
-      <Filters
-        filters={filters}
-        loading={loading}
-        setFilters={setFilters}
-        handleOpacity={handleOpacity}
-      />
+      <Filters filters={filters} loading={loading} setFilters={setFilters} />
     </div>
   );
 };

@@ -52,7 +52,7 @@ export const createViz = (
   const paths = svg
     .append("g")
     // .attr("transform", `translate(${plottingProps.margin.left},${plottingProps.margin.top})`)
-    .attr("stroke", "#ff9e0c")
+    .attr("stroke", "var(--plot-color)")
     .attr("stroke-width", "2px")
     .style("fill", "none")
     .attr("pointer-events", "none") // otherwise triggers mouseout event.

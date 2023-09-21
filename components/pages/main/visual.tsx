@@ -66,7 +66,6 @@ export default (): JSX.Element => {
         filters={filters}
         loading={dataState.loading}
         setFilters={setFilters}
-        handleOpacity={handleOpacity}
         handleEnter={handlePanelEnter}
         handleExit={handlePanelExit}
       />

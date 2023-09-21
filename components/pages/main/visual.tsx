@@ -58,8 +58,6 @@ export default (): JSX.Element => {
     }
   };
 
-  console.log(filters.activity, dataState.loading);
-
   return (
     <>
       <Sidebar

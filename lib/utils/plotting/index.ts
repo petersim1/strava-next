@@ -6,6 +6,7 @@ import { PlotDataI, CoordinatesI } from "@/types/data";
 import { plottingProps } from "@/lib/constants";
 import { getBoxedExtent } from "./box";
 import { activate, deactivate } from "./animate";
+import { getHour, getMinute, getMiles, getDateFormat } from "@/lib/utils";
 
 export const createViz = (
   plotHolder: d3.Selection<null, unknown, null, undefined>,
@@ -40,15 +41,6 @@ export const createViz = (
     .x((d) => x(d.x))
     .y((d) => y(d.y));
 
-  // const rect = svg
-  //   .append("rect")
-  //   .attr("height", plottingProps.height - plottingProps.margin.top - plottingProps.margin.bottom)
-  //   .attr("width", plottingProps.width - plottingProps.margin.left - plottingProps.margin.right)
-  //   .attr("fill", "transparent") // making this none will not trigger the mouseevents.
-  //   .attr("stroke", "white")
-  //   .attr("stroke-width", "2px")
-  //   .attr("transform", `translate(${plottingProps.margin.left},${plottingProps.margin.top})`);
-
   const paths = svg
     .append("g")
     // .attr("transform", `translate(${plottingProps.margin.left},${plottingProps.margin.top})`)
@@ -63,18 +55,26 @@ export const createViz = (
     .style("opacity", opacity)
     .attr("d", (d) => line(d.coordinates));
 
-  const text = svg
-    .append("text")
-    .attr("x", plottingProps.width)
-    .attr("y", 0)
-    .attr("width", 200)
-    .attr("height", 20)
-    .attr("text-anchor", "end")
-    .attr("stroke", "currentColor")
-    .attr("fill", "currentColor")
-    .attr("dy", "30px")
-    .style("font", "bold 30px sans-serif")
-    .text("");
+  const tooltip = plotHolder
+    .append("div")
+    .style("position", "absolute")
+    .style("top", "20px")
+    .style("right", "20px")
+    .style("pointer-events", "none")
+    .attr("class", "tooltip")
+    .html("");
+
+  const updateTooltip = (d: PlotDataI): void => {
+    const html = `
+      <div>${getDateFormat(d.start_date_local)}</div>
+      <div class="name">${d.name}</div>
+      <div class="info">
+        <div>${getMiles(d.distance)}</div>
+        <div>${getHour(d.moving_time)}hr ${getMinute(d.moving_time)}min</div>
+      </div>
+    `;
+    tooltip.html(html);
+  };
 
   svg
     .on("mousemove", (e) => {
@@ -98,12 +98,14 @@ export const createViz = (
           d3.select(this).transition().call(deactivate, 100, opacity, true);
         }
       });
-      text.text(ind ? data[ind].id : "");
+      if (ind !== undefined) {
+        updateTooltip(data[ind]);
+      }
     })
     .on("mouseout", () => {
       // force all to deactivated position.
       paths.transition().call(deactivate, 250, opacity, true);
-      text.text("");
+      tooltip.html("");
     })
     .on("touchstart", (e) => e.preventDefault());
 };

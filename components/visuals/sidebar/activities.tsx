@@ -1,5 +1,6 @@
 import { PlotDataI } from "@/types/data";
 import styles from "./styled.module.css";
+import { getHour, getMinute, getMiles, getDateFormat } from "@/lib/utils";
 
 export default ({
   data,
@@ -10,20 +11,6 @@ export default ({
   handleEnter: (e: React.MouseEvent<HTMLDivElement>) => void;
   handleExit: (e: React.MouseEvent<HTMLDivElement>) => void;
 }): JSX.Element => {
-  const getHour = (t: number): number => {
-    return Math.floor(t / 60 / 60);
-  };
-  const getMinute = (t: number): number => {
-    const hr = getHour(t);
-    return Math.floor((t - hr * 60 * 60) / 60);
-  };
-  const getMiles = (d: number): number => {
-    return Math.round(d * 0.000621371 * 100) / 100;
-  };
-  const getDateFormat = (t: number): string => {
-    return new Date(t).toDateString();
-  };
-
   return (
     <div className={styles.panel_activities}>
       {data.map((d) => (

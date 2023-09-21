@@ -21,3 +21,13 @@
   justify-content: flex-end;
   align-items: center;
 }
+
+.plot_toggles {
+  grid-row: 3 / 4;
+  grid-column: 2 / 3;
+  justify-self: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}

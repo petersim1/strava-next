@@ -12,7 +12,7 @@
   max-height: 100vh;
   display: grid;
   grid-template-columns: 300px 1fr;
-  grid-template-rows: min-content 1fr min-content;
+  grid-template-rows: min-content 1fr min-content min-content;
   align-items: center;
   justify-content: center;
 }
@@ -27,10 +27,10 @@
 }
 
 .footer {
-  grid-row: 3 / 4;
+  grid-row: 4 / 5;
   grid-column: 2 / 3;
   width: 100%;
-  padding: 1rem 2rem;
+  padding: 0.25rem 2rem;
   display: flex;
   flex-direction: row;
   align-items: center;

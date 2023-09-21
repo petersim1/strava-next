@@ -3,12 +3,15 @@
 import { useState, useMemo } from "react";
 import { select } from "d3";
 
-import Sidebar from "@/components/visuals/sidebar";
-import Plot from "@/components/visuals/plot";
 import { useDataFetcher, useDataArrUpdate, useLocalStorage } from "@/lib/hooks";
 import { updateLocalStorage } from "@/lib/localStorage";
 import { FilteringI, Stores } from "@/types/data";
 import { activate, deactivate } from "@/lib/utils/plotting/animate";
+import Sidebar from "@/components/visuals/sidebar";
+import Plot from "@/components/visuals/plot";
+import Toggle from "@/components/visuals/toggle";
+import Range from "@/components/visuals/range";
+import styles from "../styled.module.css";
 
 export default (): JSX.Element => {
   const [boxIndex, setBoxIndex] = useState(0);
@@ -62,45 +65,16 @@ export default (): JSX.Element => {
         dataTotCount={plotData.length}
         filters={filters}
         loading={dataState.loading}
-        boxIndex={boxIndex}
         setFilters={setFilters}
         handleOpacity={handleOpacity}
-        handleBoxIndex={handleBoxIndex}
         handleEnter={handlePanelEnter}
         handleExit={handlePanelExit}
       />
       <Plot data={groupData} dataState={dataState} opacity={Number(filters.opacity)} />
+      <div className={styles.plot_toggles}>
+        <Toggle boxIndex={boxIndex} handleBoxIndex={handleBoxIndex} />
+        <Range loading={dataState.loading} filters={filters} handleOpacity={handleOpacity} />
+      </div>
     </>
   );
-
-  // return (
-  //   <div className={styles.visual_holder}>
-  //     {dataState.done && (
-  //       <div style={{ gridRow: "1 / 2", gridColumn: "2 / 3", alignSelf: "flex-start" }}>
-  //         {groupings.length} region(s) detected
-  //       </div>
-  //     )}
-  //     <Plot
-  //       plotData={plotData}
-  //       dataState={dataState}
-  //       opacity={Number(filters.opacity)}
-  //       groupings={groupings}
-  //       boxIndex={boxIndex}
-  //     />
-  //     <Panel
-  //       plotData={plotData}
-  //       opacity={Number(filters.opacity)}
-  //       groupings={groupings}
-  //       boxIndex={boxIndex}
-  //     />
-  //     <Filters
-  //       filters={filters}
-  //       loading={dataState.loading}
-  //       boxIndex={boxIndex}
-  //       setFilters={setFilters}
-  //       handleOpacity={handleOpacity}
-  //       handleBoxIndex={handleBoxIndex}
-  //     />
-  //   </div>
-  // );
 };

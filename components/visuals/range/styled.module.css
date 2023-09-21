@@ -1,0 +1,16 @@
+.toggle_holder {
+  grid-row: 2 / 3;
+  grid-column: 2 / 3;
+  align-self: flex-end;
+  justify-self: center;
+}
+
+.toggle {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.toggle label {
+  display: none;
+}

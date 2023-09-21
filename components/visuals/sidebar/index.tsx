@@ -11,10 +11,8 @@ export default ({
   dataTotCount,
   filters,
   loading,
-  boxIndex,
   setFilters,
   handleOpacity,
-  handleBoxIndex,
   handleEnter,
   handleExit,
 }: {
@@ -23,27 +21,23 @@ export default ({
   dataTotCount: number;
   filters: FilteringI;
   loading: boolean;
-  boxIndex: number;
   setFilters: Dispatch<SetStateAction<FilteringI>>;
   handleOpacity: (e: FormEvent<HTMLInputElement>) => void;
-  handleBoxIndex: (type: string) => void;
   handleEnter: (e: React.MouseEvent<HTMLDivElement>) => void;
   handleExit: (e: React.MouseEvent<HTMLDivElement>) => void;
 }): JSX.Element => {
   return (
     <div className={styles.panel}>
       <div className={styles.header}>
-        <p>{dataTotCount} Total Activities</p>
-        <p>{dataNumRegions} Regions Detected</p>
+        <p>Total Activities: {dataTotCount}</p>
+        <p>Regions Detected: {dataNumRegions}</p>
       </div>
       <Activities data={data} handleEnter={handleEnter} handleExit={handleExit} />
       <Filters
         filters={filters}
         loading={loading}
-        boxIndex={boxIndex}
         setFilters={setFilters}
         handleOpacity={handleOpacity}
-        handleBoxIndex={handleBoxIndex}
       />
     </div>
   );

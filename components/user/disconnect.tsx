@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { DB } from "@/lib/indexedDB";
 import { clearLocalStorage } from "@/lib/localStorage";
 import { Stores } from "@/types/data";
+import Logout from "@/components/assets/logout";
 import styles from "./styled.module.css";
 
 export default (): JSX.Element => {
@@ -33,7 +34,7 @@ export default (): JSX.Element => {
 
   return (
     <div onClick={handleLogout} className={styles.disconnect}>
-      <p>Disconnect</p>
+      <Logout fill="white" height="24px" width="24px" />
     </div>
   );
 };

@@ -5,21 +5,17 @@ import { select } from "d3";
 
 import { PlotDataI, DataStateI } from "@/types/data";
 import { createViz } from "@/lib/utils/plotting";
-import Loader from "../layout/loader";
-import styles from "./styled.module.css";
+import Loader from "@/components/layout/loader";
+import styles from "../styled.module.css";
 
 export default ({
-  plotData,
-  groupings,
+  data,
   dataState,
   opacity,
-  boxIndex,
 }: {
-  plotData: PlotDataI[];
-  groupings: number[][];
+  data: PlotDataI[];
   dataState: DataStateI;
   opacity: number;
-  boxIndex: number;
 }): JSX.Element => {
   const ref = useRef(null);
 
@@ -27,11 +23,10 @@ export default ({
     const svg = select(ref.current);
 
     svg.selectAll("*").remove(); // remove current SVG so we can start fresh each run.
-    if (plotData.length > 0) {
-      const toPlot = groupings[boxIndex].map((i) => plotData[i]);
-      createViz(svg, toPlot, opacity);
+    if (data.length > 0) {
+      createViz(svg, data, opacity);
     }
-  }, [plotData, opacity, boxIndex, groupings]);
+  }, [data, opacity]);
 
   return (
     <div className={styles.plot_holder}>

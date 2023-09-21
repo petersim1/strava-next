@@ -1,14 +1,14 @@
 .disconnect {
   cursor: pointer;
-  padding: 0.5rem 1rem;
-  border: 1px solid white;
-  border-radius: 10px;
-  transition: color 0.25s ease-in-out, border-color 0.25s ease-in-out;
+  height: 100%;
 }
 
-.disconnect:hover {
-  border-color: var(--warning);
-  color: var(--warning);
+.disconnect svg {
+  transition: fill 0.25s ease-in-out;
+}
+
+.disconnect:hover svg {
+  fill: var(--warning);
 }
 
 .user_holder {
@@ -16,11 +16,12 @@
   flex-direction: row;
   align-items: center;
   gap: 1rem;
+  margin-left: auto;
 }
 
 .user_img {
-  height: 45px;
-  width: 45px;
+  height: 40px;
+  width: 40px;
   border-radius: 100%;
   position: relative;
   overflow: hidden;

@@ -67,6 +67,7 @@ export default (): JSX.Element => {
         filters={filters}
         loading={dataState.loading}
         setFilters={setFilters}
+        setBoxIndex={setBoxIndex}
         handleEnter={handlePanelEnter}
         handleExit={handlePanelExit}
       />

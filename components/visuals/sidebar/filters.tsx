@@ -9,10 +9,12 @@ export default ({
   filters,
   loading,
   setFilters,
+  setBoxIndex,
 }: {
   filters: FilteringI;
   loading: boolean;
   setFilters: Dispatch<SetStateAction<FilteringI>>;
+  setBoxIndex: Dispatch<SetStateAction<number>>;
 }): JSX.Element => {
   // setting a defaultValue wasn't working as expected,
   // likely because it's mounting before having access to localstorage states.
@@ -26,6 +28,7 @@ export default ({
 
   const handleSubmit = (event: React.ChangeEvent<HTMLFormElement>): void => {
     event.preventDefault();
+    setBoxIndex(0);
     const formData = Object.fromEntries(new FormData(event.target));
     formData.opacity = filters.opacity;
     updateLocalStorage(Stores.FILTER, formData as FilteringI);

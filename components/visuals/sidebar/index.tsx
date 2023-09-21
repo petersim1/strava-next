@@ -12,6 +12,7 @@ export default ({
   filters,
   loading,
   setFilters,
+  setBoxIndex,
   handleEnter,
   handleExit,
 }: {
@@ -21,6 +22,7 @@ export default ({
   filters: FilteringI;
   loading: boolean;
   setFilters: Dispatch<SetStateAction<FilteringI>>;
+  setBoxIndex: Dispatch<SetStateAction<number>>;
   handleEnter: (e: React.MouseEvent<HTMLDivElement>) => void;
   handleExit: (e: React.MouseEvent<HTMLDivElement>) => void;
 }): JSX.Element => {
@@ -28,10 +30,16 @@ export default ({
     <div className={styles.panel}>
       <div className={styles.header}>
         <p>Total Activities: {dataTotCount}</p>
+        <p>Region Activities: {data.length}</p>
         <p>Regions Detected: {dataNumRegions}</p>
       </div>
       <Activities data={data} handleEnter={handleEnter} handleExit={handleExit} />
-      <Filters filters={filters} loading={loading} setFilters={setFilters} />
+      <Filters
+        filters={filters}
+        loading={loading}
+        setFilters={setFilters}
+        setBoxIndex={setBoxIndex}
+      />
     </div>
   );
 };

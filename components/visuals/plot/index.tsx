@@ -6,7 +6,7 @@ import { select } from "d3";
 import { PlotDataI, DataStateI } from "@/types/data";
 import { createViz } from "@/lib/utils/plotting";
 import Loader from "@/components/layout/loader";
-import styles from "../styled.module.css";
+import styles from "./styled.module.css";
 
 export default ({
   data,

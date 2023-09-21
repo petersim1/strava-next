@@ -3,7 +3,7 @@ import { Dispatch, SetStateAction, FormEvent, useState, useEffect } from "react"
 import { updateLocalStorage } from "@/lib/localStorage";
 import { FilteringI, Stores } from "@/types/data";
 import { filterOptions, defaultFilters } from "@/lib/constants";
-import styles from "../styled.module.css";
+import styles from "./styled.module.css";
 
 export default ({
   filters,

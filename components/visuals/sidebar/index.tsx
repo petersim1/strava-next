@@ -1,12 +1,13 @@
 import { Dispatch, SetStateAction, FormEvent } from "react";
 
 import { PlotDataI, FilteringI } from "@/types/data";
-import styles from "../styled.module.css";
+import styles from "./styled.module.css";
 import Activities from "./activities";
 import Filters from "./filters";
 
 export default ({
   data,
+  dataNumRegions,
   dataTotCount,
   filters,
   loading,
@@ -18,6 +19,7 @@ export default ({
   handleExit,
 }: {
   data: PlotDataI[];
+  dataNumRegions: number;
   dataTotCount: number;
   filters: FilteringI;
   loading: boolean;
@@ -30,7 +32,10 @@ export default ({
 }): JSX.Element => {
   return (
     <div className={styles.panel}>
-      <p className={styles.header}>{dataTotCount} Total Rides</p>
+      <div className={styles.header}>
+        <p>{dataTotCount} Total Activities</p>
+        <p>{dataNumRegions} Regions Detected</p>
+      </div>
       <Activities data={data} handleEnter={handleEnter} handleExit={handleExit} />
       <Filters
         filters={filters}

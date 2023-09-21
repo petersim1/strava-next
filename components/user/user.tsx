@@ -11,6 +11,9 @@ export default ({ user }: { user: StravaAthleteI }): JSX.Element => {
           <img src={user.profile_medium} alt="user profile pic" />
         </div>
       </a>
+      <div>
+        <span>{`${user.firstname} ${user.lastname}`}</span>
+      </div>
       <Disconnect />
     </div>
   );

@@ -58,6 +58,7 @@ export default (): JSX.Element => {
     <>
       <Sidebar
         data={groupData}
+        dataNumRegions={groupings.length}
         dataTotCount={plotData.length}
         filters={filters}
         loading={dataState.loading}

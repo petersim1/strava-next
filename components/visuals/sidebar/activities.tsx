@@ -1,5 +1,5 @@
 import { PlotDataI } from "@/types/data";
-import styles from "../styled.module.css";
+import styles from "./styled.module.css";
 
 export default ({
   data,
@@ -49,7 +49,7 @@ export default ({
             target="_blank"
             referrerPolicy="no-referrer"
           >
-            <div>{"->"}</div>
+            <div>{"-->"}</div>
           </a>
         </div>
       ))}

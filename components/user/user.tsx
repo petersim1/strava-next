@@ -1,6 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import styles from "./styled.module.css";
 import { StravaAthleteI } from "@/types/strava";
+import Disconnect from "./disconnect";
 
 export default ({ user }: { user: StravaAthleteI }): JSX.Element => {
   return (
@@ -13,6 +14,7 @@ export default ({ user }: { user: StravaAthleteI }): JSX.Element => {
       <div>
         <span>{`${user.firstname} ${user.lastname}`}</span>
       </div>
+      <Disconnect />
     </div>
   );
 };

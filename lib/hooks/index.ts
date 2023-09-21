@@ -5,7 +5,8 @@ import { dataStatusReducer } from "@/lib/reducers";
 import { RequestError } from "@/lib/errors";
 import { defaultFilters } from "@/lib/constants";
 import { DataStateI, FilteringI, StravaActivitySimpleI, PlotDataI, Stores } from "@/types/data";
-import { decodePolyline, getGroupings } from "@/lib/utils/plotting";
+import { getGroupings } from "@/lib/utils/plotting/box";
+import { decodePolyline } from "@/lib/utils/plotting/route";
 import { DB } from "@/lib/indexedDB";
 import { getLocalStorage } from "@/lib/localStorage";
 

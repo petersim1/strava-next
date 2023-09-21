@@ -5,6 +5,7 @@
     'Roboto Mono', 'Oxygen Mono', 'Ubuntu Monospace', 'Source Code Pro',
     'Fira Mono', 'Droid Sans Mono', 'Courier New', monospace;
   --strava-orange: #FC4C02;
+  --plot-color: #FF9E0C;
   --warning: #DC3545;
 }
 
@@ -26,13 +27,14 @@ body {
 }
 
 main {
+  grid-row: 2 / 3;
+  grid-column: 1 / 4;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   width: 100%;
-  height: calc(100vh - ((45px + 4rem) + (1.215rem + 2rem) + 6rem));
-  max-height: calc(100vh - ((45px + 4rem) + (1.215rem + 2rem) + 6rem));
+  overflow: hidden;
 }
 
 a {
@@ -53,9 +55,42 @@ span {
   line-height: 1.215rem;
 }
 
+header {
+  grid-row: 1 / 2;
+  grid-column: 2 / 3;
+}
+
+footer {
+  grid-row: 2 / 3;
+  grid-column: 3 / 4;
+}
+
 header,
 footer {
   width: 100%;
+}
+
+/* D3JS tooltip */
+.tooltip {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  width: 90%;
+  overflow: hidden;
+  font-size: 0.75rem;
+}
+
+.name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 1rem;
+}
+
+.info {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
 }
 
 @media (prefers-color-scheme: dark) {

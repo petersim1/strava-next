@@ -25,6 +25,7 @@ export const defaultFilters = {
   activity: "",
   startDate: "",
   endDate: "",
+  opacity: "0.5",
 };
 
 export const mockIdbData = [
@@ -71,12 +72,12 @@ export const mockIdbData = [
 ];
 
 export const plottingProps = {
-  width: 2000,
-  height: 1500,
+  width: 1000,
+  height: 1000,
   margin: {
-    top: 100,
-    bottom: 100,
-    left: 100,
-    right: 100,
+    top: 50,
+    bottom: 50,
+    left: 50,
+    right: 50,
   },
 };

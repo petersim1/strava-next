@@ -1,0 +1,13 @@
+.toggle {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.toggle label {
+  display: none;
+}
+
+.toggle input {
+  accent-color: var(--plot-color);
+}

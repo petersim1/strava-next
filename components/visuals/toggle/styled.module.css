@@ -1,0 +1,34 @@
+.box_toggle {
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.box_toggle_btns {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.box_toggle_btns .btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 1.5rem;
+  width: 1.5rem;
+  border: 1px solid white;
+  border-radius: 100%;
+  cursor: pointer;
+}
+
+.number {
+  width: 30px;
+  text-align: center;
+}
+
+.box_toggle_btns .btn:hover {
+  opacity: 0.8;
+}

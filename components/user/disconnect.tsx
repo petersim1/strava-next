@@ -33,7 +33,7 @@ export default (): JSX.Element => {
 
   return (
     <div onClick={handleLogout} className={styles.disconnect}>
-      <p>Disconnect</p>
+      Disconnect
     </div>
   );
 };

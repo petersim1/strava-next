@@ -1,6 +1,8 @@
 .disconnect {
+  margin-left: auto;
   cursor: pointer;
-  padding: 0.5rem 1rem;
+  padding: calc((40px - 1rem) / 2) 1rem;
+  font-size: 1rem;
   border: 1px solid white;
   border-radius: 10px;
   transition: color 0.25s ease-in-out, border-color 0.25s ease-in-out;
@@ -16,11 +18,12 @@
   flex-direction: row;
   align-items: center;
   gap: 1rem;
+  width: 100%;
 }
 
 .user_img {
-  height: 45px;
-  width: 45px;
+  height: 40px;
+  width: 40px;
   border-radius: 100%;
   position: relative;
   overflow: hidden;

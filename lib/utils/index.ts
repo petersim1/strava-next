@@ -1,6 +1,20 @@
 import { StravaActivitySimpleI } from "@/types/data";
 import { StravaActivityI } from "@/types/strava";
 
+export const getHour = (t: number): number => {
+  return Math.floor(t / 60 / 60);
+};
+export const getMinute = (t: number): number => {
+  const hr = getHour(t);
+  return Math.floor((t - hr * 60 * 60) / 60);
+};
+export const getMiles = (d: number): number => {
+  return Math.round(d * 0.000621371 * 100) / 100;
+};
+export const getDateFormat = (t: number): string => {
+  return new Date(t).toDateString();
+};
+
 export const constrainOutput = (data: StravaActivityI): StravaActivitySimpleI => {
   // start_date_local is a string. Convert it to epoch time (with milliseconds).
   // start_date is a string. Convert it to epoch time (with milliseconds).

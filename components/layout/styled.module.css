@@ -28,14 +28,21 @@
 
 .footer {
   grid-row: 4 / 5;
-  grid-column: 2 / 3;
   width: 100%;
   padding: 0.25rem 2rem;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
+}
+
+.footer.narrow {
+  grid-column: 2 / 3;
   background-color: rgba(23, 24, 28, 1);
+}
+
+.footer.wide {
+  grid-column: 1 / 3;
 }
 
 .built_by {

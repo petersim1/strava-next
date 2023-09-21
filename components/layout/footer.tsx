@@ -1,11 +1,13 @@
 import Image from "next/image";
 
+import { getUser } from "@/actions";
 import Logo from "@/components/assets/logo";
 import styles from "./styled.module.css";
 
-export default (): JSX.Element => {
+export default async (): Promise<JSX.Element> => {
+  const { authed, user } = await getUser();
   return (
-    <footer className={styles.footer}>
+    <footer className={`${styles.footer} ${authed && user ? styles.narrow : styles.wide}`}>
       <div className={styles.built_by}>
         <p>
           Built by <b>Peter Simone</b> using

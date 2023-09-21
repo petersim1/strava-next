@@ -11,6 +11,7 @@ import Sidebar from "@/components/visuals/sidebar";
 import Plot from "@/components/visuals/plot";
 import Toggle from "@/components/visuals/toggle";
 import Range from "@/components/visuals/range";
+import Loader from "@/components/layout/loader";
 import styles from "../styled.module.css";
 
 export default (): JSX.Element => {
@@ -57,6 +58,8 @@ export default (): JSX.Element => {
     }
   };
 
+  console.log(filters.activity, dataState.loading);
+
   return (
     <>
       <Sidebar
@@ -69,7 +72,17 @@ export default (): JSX.Element => {
         handleEnter={handlePanelEnter}
         handleExit={handlePanelExit}
       />
-      <Plot data={groupData} dataState={dataState} opacity={Number(filters.opacity)} />
+      <div className={styles.plot_holder}>
+        {!filters.activity && !dataState.loading && (
+          <p className={styles.placeholder}>
+            Choose an <b>Activity</b> from the Dropdown
+          </p>
+        )}
+        {filters.activity && !dataState.loading && (
+          <Plot data={groupData} opacity={Number(filters.opacity)} />
+        )}
+        {dataState.loading && <Loader />}
+      </div>
       <div className={styles.plot_toggles}>
         <Toggle boxIndex={boxIndex} handleBoxIndex={handleBoxIndex} />
         <Range loading={dataState.loading} filters={filters} handleOpacity={handleOpacity} />

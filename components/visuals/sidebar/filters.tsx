@@ -53,7 +53,7 @@ export default ({
               >
                 {/* Adding a value here makes it always be considered the default... removed it. */}
                 <option disabled value="" hidden>
-                  --Select an option--
+                  -Choose option-
                 </option>
                 {option.options.map((choice, ind2) => (
                   <option key={ind2} value={choice}>

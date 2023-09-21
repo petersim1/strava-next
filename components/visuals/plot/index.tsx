@@ -3,20 +3,11 @@
 import { useRef, useEffect } from "react";
 import { select } from "d3";
 
-import { PlotDataI, DataStateI } from "@/types/data";
+import { PlotDataI } from "@/types/data";
 import { createViz } from "@/lib/utils/plotting";
-import Loader from "@/components/layout/loader";
 import styles from "./styled.module.css";
 
-export default ({
-  data,
-  dataState,
-  opacity,
-}: {
-  data: PlotDataI[];
-  dataState: DataStateI;
-  opacity: number;
-}): JSX.Element => {
+export default ({ data, opacity }: { data: PlotDataI[]; opacity: number }): JSX.Element => {
   const ref = useRef(null);
 
   useEffect(() => {
@@ -28,10 +19,5 @@ export default ({
     }
   }, [data, opacity]);
 
-  return (
-    <div className={styles.plot_holder}>
-      <div className={styles.plot} ref={ref} />
-      {dataState.loading && <Loader />}
-    </div>
-  );
+  return <div className={styles.plot} ref={ref} />;
 };

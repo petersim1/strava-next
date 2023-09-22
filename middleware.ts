@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { NextRequest } from "next/server";
 import { jwtVerify } from "jose";
 
-import { refreshAndSign } from "@/lib/auth";
+import { refreshAndSign } from "@/_lib/auth";
 
 const { JWT_SECRET } = process.env;
 
@@ -22,8 +22,15 @@ export const middleware = async (request: NextRequest): Promise<NextResponse> =>
   try {
     await jwtVerify(token, new TextEncoder().encode(JWT_SECRET));
   } catch (error) {
-    const newToken = await refreshAndSign(token);
-    response.cookies.set("X-STRAVA-JWT", newToken);
+    try {
+      const newToken = await refreshAndSign(token);
+      response.cookies.set("X-STRAVA-JWT", newToken);
+    } catch (error2) {
+      // catch the case where the refresh-token is invalid. Just remove it and force
+      // a new connection.
+      console.log(error2);
+      response.cookies.delete("X-STRAVA-JWT");
+    }
   }
 
   return response;

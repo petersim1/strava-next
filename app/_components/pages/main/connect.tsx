@@ -1,5 +1,5 @@
 import styles from "../styled.module.css";
-import Connect from "@/_components/assets/connect";
+import { Connect } from "@/_components/assets";
 
 export default (): JSX.Element => {
   // can uncomment below if I decide to go back to middleware instead of server action.

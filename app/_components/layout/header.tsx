@@ -1,4 +1,4 @@
-import User from "@/_components/user/user";
+import { User } from "@/_components/user";
 import styles from "./styled.module.css";
 import { getUser } from "@/_actions";
 

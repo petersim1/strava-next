@@ -1,7 +1,7 @@
 import Image from "next/image";
 
 import { getUser } from "@/_actions";
-import Logo from "@/_components/assets/logo";
+import { Logo } from "@/_components/assets";
 import styles from "./styled.module.css";
 
 export default async (): Promise<JSX.Element> => {

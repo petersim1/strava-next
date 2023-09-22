@@ -7,10 +7,7 @@ import { useDataFetcher, useDataArrUpdate, useLocalStorage } from "@/_lib/hooks"
 import { updateLocalStorage } from "@/_lib/localStorage";
 import { FilteringI, Stores } from "@/_types/data";
 import { activate, deactivate } from "@/_lib/utils/plotting/animate";
-import Sidebar from "@/_components/visuals/sidebar";
-import Plot from "@/_components/visuals/plot";
-import Toggle from "@/_components/visuals/toggle";
-import Range from "@/_components/visuals/range";
+import Plot, { Sidebar, Toggle, Range } from "@/_components/visuals";
 import Loader from "@/_components/layout/loader";
 import styles from "../styled.module.css";
 

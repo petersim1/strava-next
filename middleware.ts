@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { NextRequest } from "next/server";
-import { jwtVerify } from "jose";
+import { jwtVerify, decodeJwt } from "jose";
 
-import { refreshAndSign } from "@/lib/auth";
+import { refreshAndSign } from "@/_lib/auth";
 
 const { JWT_SECRET } = process.env;
 
@@ -18,6 +18,7 @@ export const middleware = async (request: NextRequest): Promise<NextResponse> =>
     // user hasn't oauthed yet, or they revoked it.
     return NextResponse.next();
   }
+  console.log(decodeJwt(token));
   // verify token. If it's expired, go through refresh workflow, and reset the cookie.
   try {
     await jwtVerify(token, new TextEncoder().encode(JWT_SECRET));

@@ -1,29 +1,36 @@
-import { headers } from "next/headers";
+"use client";
+
 import styles from "./styled.module.css";
 
-const { CLIENT_ID } = process.env;
 const CALLBACK = "/api/auth/callback";
 
-const getURL = (): string => {
-  const header = headers();
-  return `${header.get("x-forwarded-proto") || (header.get("https") && "https") || "http"}://${
-    header.get("x-forwarded-host") || header.get("host")
-  }`;
-};
-
-export default (): JSX.Element => {
+export default ({ url }: { url: string }): JSX.Element => {
   // localhost is whitelisted.
-  const url = getURL();
+  const search = new URLSearchParams({
+    client_id: process.env.NEXT_PUBLIC_CLIENT_ID || "",
+    redirect_uri: url + CALLBACK,
+    response_type: "code",
+    approval_prompt: "force",
+    scope: "activity:read",
+  });
+  let urlUse = new URL("strava://oauth/mobile/authorize");
 
-  const urlUse = new URL("https://www.strava.com/oauth/authorize");
-  urlUse.searchParams.set("client_id", CLIENT_ID?.toString() || "");
-  urlUse.searchParams.set("redirect_uri", url + CALLBACK);
-  urlUse.searchParams.set("response_type", "code");
-  urlUse.searchParams.set("approval_prompt", "force");
-  urlUse.searchParams.set("scope", "activity:read");
+  // will require patch, should accept a URLSearchParams object.
+  urlUse.search = search.toString();
+  const onClick = (): void => {
+    const now = new Date().valueOf();
+    setTimeout(function () {
+      // navigating back to page still flashes web auth. Likely need to fix this.
+      if (new Date().valueOf() - now > 100) return;
+      urlUse = new URL("https://www.strava.com/oauth/mobile/authorize");
+      urlUse.search = search.toString();
+      document.location.href = urlUse.toString();
+    }, 25);
+    document.location.href = urlUse.toString();
+  };
 
   return (
-    <a href={urlUse.toString()} referrerPolicy="no-referrer" className={styles.connect_link}>
+    <a href="#" onClick={onClick} className={styles.connect_link}>
       <div className={styles.connect} />
     </a>
   );

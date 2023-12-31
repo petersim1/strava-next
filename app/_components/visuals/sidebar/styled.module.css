@@ -42,10 +42,36 @@
 
 .wide {
   width: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 15px;
 }
 
-.wide select {
-  width: 45%;
+.wide label {
+  width: 100%;
+}
+
+.wide span {
+  display: none;
+}
+
+.wide input {
+  appearance: none;
+  display: none;
+}
+
+.wide div {
+  opacity: 0.5;
+  transition: opacity 0.25s ease-in-out;
+}
+
+.wide div:has(input:checked) {
+  opacity: 1;
+}
+
+.wide div:not(:has(input:checked)):hover {
+  opacity: 0.75;
 }
 
 .small {

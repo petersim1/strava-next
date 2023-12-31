@@ -1,6 +1,5 @@
 export default (props: any): JSX.Element => {
   return (
-    // <!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
     <svg
       fill="#000000"
       width="800px"

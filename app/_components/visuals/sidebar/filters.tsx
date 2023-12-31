@@ -1,8 +1,9 @@
 import { Dispatch, SetStateAction, useState, useEffect } from "react";
 
+import { Cycling, Running } from "@/_components/assets";
 import { updateLocalStorage } from "@/_lib/localStorage";
 import { FilteringI, Stores } from "@/_types/data";
-import { filterOptions, defaultFilters } from "@/_lib/constants";
+import { defaultFilters } from "@/_lib/constants";
 import styles from "./styled.module.css";
 
 export default ({
@@ -37,46 +38,66 @@ export default ({
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>): void => {
     const { name, value } = e.currentTarget;
+    console.log(name, value);
     setSelection((prev) => ({ ...prev, [name]: value }));
   };
 
   return (
     <div className={styles.filters}>
       <form onSubmit={handleSubmit}>
-        {Object.entries(filterOptions).map(([key, option], ind) => (
-          <div key={ind} className={option.type === "select" ? styles.wide : styles.small}>
-            <label htmlFor={key}>{option.name}</label>
-            {option.type === "select" && (
-              <select
-                name={key}
-                required={option.required}
-                disabled={loading}
-                value={selection[key as keyof typeof filters]}
-                onChange={handleChange}
-              >
-                {/* Adding a value here makes it always be considered the default... removed it. */}
-                <option disabled value="" hidden>
-                  -Choose option-
-                </option>
-                {option.options.map((choice, ind2) => (
-                  <option key={ind2} value={choice}>
-                    {choice}
-                  </option>
-                ))}
-              </select>
-            )}
-            {option.type === "date" && (
-              <input
-                type="date"
-                name={key}
-                required={option.required}
-                disabled={loading}
-                value={selection[key as keyof typeof filters]}
-                onChange={handleChange}
-              />
-            )}
+        <div className={styles.wide}>
+          <label>Activity</label>
+          <div>
+            <input
+              type="radio"
+              id="Ride"
+              name="activity"
+              value="Ride"
+              onChange={handleChange}
+              checked={selection.activity == "Ride"}
+            />
+            <label htmlFor="Ride">
+              <span>cycling</span>
+              <Cycling fill="currentColor" height="20px" width="20px" />
+            </label>
           </div>
-        ))}
+          <div>
+            <input
+              type="radio"
+              id="Run"
+              name="activity"
+              value="Run"
+              onChange={handleChange}
+              checked={selection.activity == "Run"}
+            />
+            <label htmlFor="Run">
+              <span>running</span>
+              <Running fill="currentColor" height="20px" width="20px" />
+            </label>
+          </div>
+        </div>
+        <div className={styles.small}>
+          <label htmlFor="startDate">Date From</label>
+          <input
+            type="date"
+            name="startDate"
+            required={false}
+            disabled={loading}
+            value={selection.startDate}
+            onChange={handleChange}
+          />
+        </div>
+        <div className={styles.small}>
+          <label htmlFor="endDate">Date To</label>
+          <input
+            type="date"
+            name="endDate"
+            required={false}
+            disabled={loading}
+            value={selection.endDate}
+            onChange={handleChange}
+          />
+        </div>
         <button type="submit" className={styles.submit}>
           submit
         </button>

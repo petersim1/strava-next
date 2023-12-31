@@ -56,7 +56,7 @@
       }
     },
     {
-      "files": ["assets/*.tsx", "logos/*.tsx"],
+      "files": ["**/assets/*.tsx"],
       "rules": {
         "max-len": "off",
         "@typescript-eslint/no-explicit-any": "off"

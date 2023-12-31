@@ -1,5 +1,5 @@
-import Visual from "@/_components/pages/main/visual";
+import Visual from "@/_components/main";
 
-export default async (): Promise<JSX.Element> => {
+export default (): JSX.Element => {
   return <Visual />;
 };

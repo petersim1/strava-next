@@ -16,7 +16,10 @@ export const middleware = async (request: NextRequest): Promise<NextResponse> =>
 
   if (!token) {
     // user hasn't oauthed yet, or they revoked it.
-    return NextResponse.next();
+    if (request.nextUrl.pathname == "/") {
+      return NextResponse.redirect(new URL("/login", request.url));
+    }
+    return response;
   }
   // verify token. If it's expired, go through refresh workflow, and reset the cookie.
   try {
@@ -30,12 +33,20 @@ export const middleware = async (request: NextRequest): Promise<NextResponse> =>
       // a new connection.
       console.log(error2);
       response.cookies.delete("X-STRAVA-JWT");
+      if (request.nextUrl.pathname == "/") {
+        return NextResponse.redirect(new URL("/login", request.url));
+      }
+      return response;
     }
+  }
+
+  if (request.nextUrl.pathname == "/login") {
+    return NextResponse.redirect(new URL("/", request.url));
   }
 
   return response;
 };
 
 export const config = {
-  matcher: ["/", "/api/:path*"],
+  matcher: ["/", "/login", "/api/:path*"],
 };

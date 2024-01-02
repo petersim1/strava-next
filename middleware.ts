@@ -27,7 +27,14 @@ export const middleware = async (request: NextRequest): Promise<NextResponse> =>
   } catch (error) {
     try {
       const newToken = await refreshAndSign(token);
+      if (request.nextUrl.pathname == "/login") {
+        const responseRedir = NextResponse.redirect(new URL("/", request.url));
+        responseRedir.cookies.set("X-STRAVA-JWT", newToken);
+        return responseRedir;
+      }
       response.cookies.set("X-STRAVA-JWT", newToken);
+      console.log("expired, refreshed");
+      return response;
     } catch (error2) {
       // catch the case where the refresh-token is invalid. Just remove it and force
       // a new connection.

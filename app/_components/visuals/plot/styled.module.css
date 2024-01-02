@@ -21,3 +21,26 @@
   justify-content: center;
   align-items: center;
 }
+
+.modal_wrapper {
+  position: absolute;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  top: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,.2);
+  backdrop-filter: blur(10px);
+}
+
+.modal_preview {
+  height: 80%;
+  aspect-ratio: 1 / 1;
+  background: var(--bg);
+  border: 1px solid white;
+  border-radius: 12px;
+  pointer-events: none;
+  position: relative;
+}

@@ -1,5 +1,12 @@
+import { Header, Footer } from "@/_components/layout";
 import Visual from "@/_components/main";
 
 export default (): JSX.Element => {
-  return <Visual />;
+  return (
+    <>
+      <Header showUser={true} />
+      <Visual />
+      <Footer showUser={true} />
+    </>
+  );
 };

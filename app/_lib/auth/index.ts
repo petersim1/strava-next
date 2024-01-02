@@ -5,7 +5,7 @@ import { StravaOauthI, JWTtoSignI, StravaRefreshI } from "@/_types/auth";
 import { StravaAthleteI } from "@/_types/strava";
 import { RequestError } from "@/_lib/errors";
 
-const { CLIENT_ID, CLIENT_SECRET, JWT_SECRET } = process.env;
+const { CLIENT_SECRET, JWT_SECRET } = process.env;
 
 export const signJWTwithInputs = async (
   athlete: StravaAthleteI,
@@ -35,7 +35,7 @@ export const refreshToken = (token: string): Promise<StravaOauthI> => {
   const { refresh_token, athlete } = decoded as JWTtoSignI;
 
   const urlUse = new URL("https://www.strava.com/oauth/token");
-  urlUse.searchParams.set("client_id", CLIENT_ID?.toString() || "");
+  urlUse.searchParams.set("client_id", process.env.NEXT_PUBLIC_CLIENT_ID?.toString() || "");
   urlUse.searchParams.set("client_secret", CLIENT_SECRET?.toString() || "");
   urlUse.searchParams.set("grant_type", "refresh_token");
   urlUse.searchParams.set("refresh_token", refresh_token);

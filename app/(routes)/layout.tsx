@@ -2,7 +2,7 @@ import "@/globals.css";
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 
-import Layout, { Header, Footer } from "@/_components/layout";
+import Layout from "@/_components/layout";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -28,12 +28,7 @@ export default ({ children }: { children: React.ReactNode }): JSX.Element => {
   return (
     <html lang="en">
       <body className={inter.className}>
-        <Layout>
-          <Header />
-          {children}
-          {/* <main>{children}</main> */}
-          <Footer />
-        </Layout>
+        <Layout>{children}</Layout>
       </body>
     </html>
   );

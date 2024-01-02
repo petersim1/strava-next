@@ -32,10 +32,12 @@ export const middleware = async (request: NextRequest): Promise<NextResponse> =>
       // catch the case where the refresh-token is invalid. Just remove it and force
       // a new connection.
       console.log(error2);
-      response.cookies.delete("X-STRAVA-JWT");
       if (request.nextUrl.pathname == "/") {
-        return NextResponse.redirect(new URL("/login", request.url));
+        const responseRedir = NextResponse.redirect(new URL("/login", request.url));
+        responseRedir.cookies.delete("X-STRAVA-JWT");
+        return responseRedir;
       }
+      response.cookies.delete("X-STRAVA-JWT");
       return response;
     }
   }

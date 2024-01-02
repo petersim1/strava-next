@@ -1,12 +1,10 @@
 import { User } from "@/_components/user";
 import styles from "./styled.module.css";
-import { getUser } from "@/_actions";
 
-export default async (): Promise<JSX.Element> => {
-  const { authed, user } = await getUser();
+export default ({ showUser }: { showUser: boolean }): JSX.Element => {
   return (
     <header>
-      <nav className={styles.nav}>{authed && user && <User user={user} />}</nav>
+      <nav className={styles.nav}>{showUser && <User />}</nav>
     </header>
   );
 };

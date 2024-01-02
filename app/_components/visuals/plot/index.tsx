@@ -59,13 +59,17 @@ export default ({ data, opacity }: { data: PlotDataI[]; opacity: number }): JSX.
   return (
     <>
       <div className={styles.plot} ref={ref} />
-      <div style={{ marginLeft: "auto", zIndex: 999 }}>
-        <button onClick={handleOpen}>test</button>
+      <div className={styles.downloadable}>
+        <button onClick={handleOpen} className={styles.button_plot}>
+          Preview Download
+        </button>
       </div>
       <div id="modal-holder" className={styles.modal_wrapper}>
         <div className={styles.modal_container}>
           <div className={styles.modal_header}>
-            <button onClick={handleDownload}>Download!</button>
+            <button onClick={handleDownload} className={styles.button_plot}>
+              Download!
+            </button>
             <div onClick={handleClose} style={{ fontSize: "1.2rem", cursor: "pointer" }}>
               X
             </div>

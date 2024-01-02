@@ -1,12 +1,19 @@
 :root {
   --max-width: 1200px;
-  --border-radius: 12px;
-  --font-mono: ui-monospace, Menlo, Monaco, 'Cascadia Mono', 'Segoe UI Mono',
-    'Roboto Mono', 'Oxygen Mono', 'Ubuntu Monospace', 'Source Code Pro',
-    'Fira Mono', 'Droid Sans Mono', 'Courier New', monospace;
+  --border-radius: 10px;
   --strava-orange: #FC4C02;
-  --plot-color: #FF9E0C;
   --warning: #DC3545;
+  --bg: #121212;
+  --fc: #FFFFFF;
+  --fc-primary: rgba(255,255,255,0.87);
+  --fc-secondary: rgba(255,255,255,0.6);
+  --fc-disabled: rgba(255,255,255,0.4);
+  --primary: #FF9E0C;
+  --primary-mix-10: color-mix(in oklab, #FF9E0C, #FFFFFF 5%);
+  --primary-mix-20: color-mix(in oklab, #FF9E0C, #FFFFFF 10%);
+  --primary-mix-30: color-mix(in oklab, #FF9E0C, #FFFFFF 15%);
+  --bg-mix-10: color-mix(in oklab, #121212, #FFFFFF 5%);
+  --bg-mix-20: color-mix(in oklab, #121212, #FFFFFF 10%);
 }
 
 *,
@@ -21,9 +28,11 @@ body {
   margin: 0;
   max-width: 100vw;
   overflow-x: hidden;
-  font-family: var(--font-mono);
-  color: white;
-  background: rgb(0,0,0);
+  font-family: ui-monospace, Menlo, Monaco, 'Cascadia Mono', 'Segoe UI Mono',
+  'Roboto Mono', 'Oxygen Mono', 'Ubuntu Monospace', 'Source Code Pro',
+  'Fira Mono', 'Droid Sans Mono', 'Courier New', monospace;
+  color: var(--fc);
+  background: var(--bg);
 }
 
 main {
@@ -53,6 +62,7 @@ span {
   margin: 0;
   font-size: 1rem;
   line-height: 1.215rem;
+  color: var(--fc-primary);
 }
 
 header {

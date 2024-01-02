@@ -71,7 +71,7 @@ export default (): JSX.Element => {
       <div className={styles.plot_holder}>
         {!filters.activity && !dataState.loading && (
           <p className={styles.placeholder}>
-            Choose an <b>Activity</b> from the Dropdown
+            Select an <b>Activity</b> to get started
           </p>
         )}
         {filters.activity && !dataState.loading && (

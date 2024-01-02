@@ -27,14 +27,14 @@ export const deactivate = (
     transition
       .duration(duration)
       .ease(d3.easeLinear)
-      .attr("stroke", "#ff9e0c")
+      .attr("stroke", "var(--plot-mix-10)")
       .style("opacity", opacity)
       .style("transform", "translate(0, 0)");
   } else {
     transition
       .duration(duration)
       .ease(d3.easeLinear)
-      .attr("stroke", "#ff9e0c")
+      .attr("stroke", "var(--plot-mix-10)")
       .style("opacity", opacity);
   }
 };

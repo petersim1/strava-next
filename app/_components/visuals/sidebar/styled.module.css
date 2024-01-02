@@ -10,7 +10,8 @@
   flex: 1 1;
   border-radius: 0 12px 0 0;
   overflow: hidden;
-  background-color: rgba(23, 24, 28, 1);
+  background-color: var(--bg);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.145), 0px 1px 2px rgba(0,0,0,.16);
 }
 
 .header {
@@ -42,10 +43,36 @@
 
 .wide {
   width: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 15px;
 }
 
-.wide select {
-  width: 45%;
+.wide label {
+  width: 100%;
+}
+
+.wide span {
+  display: none;
+}
+
+.wide input {
+  appearance: none;
+  display: none;
+}
+
+.wide div {
+  opacity: 0.5;
+  transition: opacity 0.25s ease-in-out;
+}
+
+.wide div:has(input:checked) {
+  opacity: 1;
+}
+
+.wide div:not(:has(input:checked)):hover {
+  opacity: 0.75;
 }
 
 .small {
@@ -65,10 +92,18 @@
   width: 45%;
   border-radius: 12px;
   padding: 0.25rem;
-  background-color: var(--strava-orange);
+  background-color: var(--bg-mix-10);
+  /* color: var(--primary-mix-30); */
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.145), 0px 1px 2px rgba(0,0,0,.16);
   cursor: pointer;
   outline: none;
   border: none;
+  transition: background-color 0.25s ease-in-out;
+}
+
+.submit:hover,
+.submit:focus-visible {
+  background-color: var(--bg-mix-20);
 }
 
 .panel_activities {
@@ -81,7 +116,7 @@
 
 .panel_activities a {
   width: 10%;
-  color: var(--strava-orange);
+  color: var(--primary-mix-10);
   font-size: 1rem;
 }
 

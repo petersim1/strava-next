@@ -44,7 +44,7 @@ export const createViz = (
   const paths = svg
     .append("g")
     // .attr("transform", `translate(${plottingProps.margin.left},${plottingProps.margin.top})`)
-    .attr("stroke", "var(--plot-color)")
+    .attr("stroke", "var(--primary)")
     .attr("stroke-width", "2px")
     .style("fill", "none")
     .attr("pointer-events", "none") // otherwise triggers mouseout event.
@@ -69,7 +69,7 @@ export const createViz = (
       <div>${getDateFormat(d.start_date_local)}</div>
       <div class="name">${d.name}</div>
       <div class="info">
-        <div>${getMiles(d.distance)}</div>
+        <div>${getMiles(d.distance)} mi</div>
         <div>${getHour(d.moving_time)}hr ${getMinute(d.moving_time)}min</div>
       </div>
     `;

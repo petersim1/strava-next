@@ -1,13 +1,12 @@
-import { getUser } from "@/_actions";
-import Connect from "@/_components/pages/main/connect";
-import Visual from "@/_components/pages/main/visual";
+import { Header, Footer } from "@/_components/layout";
+import Visual from "@/_components/main";
 
-export default async (): Promise<JSX.Element> => {
-  const { authed } = await getUser();
+export default (): JSX.Element => {
   return (
     <>
-      {!authed && <Connect />}
-      {authed && <Visual />}
+      <Header showUser={true} />
+      <Visual />
+      <Footer showUser={true} />
     </>
   );
 };

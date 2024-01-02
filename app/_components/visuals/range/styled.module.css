@@ -9,5 +9,5 @@
 }
 
 .toggle input {
-  accent-color: var(--plot-color);
+  accent-color: var(--primary-mix-10);
 }

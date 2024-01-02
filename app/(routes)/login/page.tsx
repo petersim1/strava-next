@@ -1,6 +1,7 @@
 import { headers } from "next/headers";
 
-import styles from "../styled.module.css";
+import { Header, Footer } from "@/_components/layout";
+import styles from "@/_components/main/styled.module.css";
 import { Connect } from "@/_components/assets";
 
 export default (): JSX.Element => {
@@ -16,9 +17,13 @@ export default (): JSX.Element => {
 
   const url = getURL();
   return (
-    <div className={styles.connect_holder}>
-      <p>{"Let's link your Strava so we can get started"}</p>
-      <Connect url={url} />
-    </div>
+    <>
+      <Header showUser={false} />
+      <div className={styles.connect_holder}>
+        <p>{"Let's link your Strava so we can get started"}</p>
+        <Connect url={url} />
+      </div>
+      <Footer showUser={false} />
+    </>
   );
 };

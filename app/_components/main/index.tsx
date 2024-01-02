@@ -9,7 +9,7 @@ import { FilteringI, Stores } from "@/_types/data";
 import { activate, deactivate } from "@/_lib/utils/plotting/animate";
 import Plot, { Sidebar, Toggle, Range } from "@/_components/visuals";
 import Loader from "@/_components/layout/loader";
-import styles from "../styled.module.css";
+import styles from "./styled.module.css";
 
 export default (): JSX.Element => {
   const [boxIndex, setBoxIndex] = useState(0);
@@ -71,7 +71,7 @@ export default (): JSX.Element => {
       <div className={styles.plot_holder}>
         {!filters.activity && !dataState.loading && (
           <p className={styles.placeholder}>
-            Choose an <b>Activity</b> from the Dropdown
+            Select an <b>Activity</b> to get started
           </p>
         )}
         {filters.activity && !dataState.loading && (

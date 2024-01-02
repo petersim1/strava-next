@@ -16,7 +16,10 @@ export const middleware = async (request: NextRequest): Promise<NextResponse> =>
 
   if (!token) {
     // user hasn't oauthed yet, or they revoked it.
-    return NextResponse.next();
+    if (request.nextUrl.pathname == "/") {
+      return NextResponse.redirect(new URL("/login", request.url));
+    }
+    return response;
   }
   // verify token. If it's expired, go through refresh workflow, and reset the cookie.
   try {
@@ -24,18 +27,35 @@ export const middleware = async (request: NextRequest): Promise<NextResponse> =>
   } catch (error) {
     try {
       const newToken = await refreshAndSign(token);
+      if (request.nextUrl.pathname == "/login") {
+        const responseRedir = NextResponse.redirect(new URL("/", request.url));
+        responseRedir.cookies.set("X-STRAVA-JWT", newToken);
+        return responseRedir;
+      }
       response.cookies.set("X-STRAVA-JWT", newToken);
+      console.log("expired, refreshed");
+      return response;
     } catch (error2) {
       // catch the case where the refresh-token is invalid. Just remove it and force
       // a new connection.
       console.log(error2);
+      if (request.nextUrl.pathname == "/") {
+        const responseRedir = NextResponse.redirect(new URL("/login", request.url));
+        responseRedir.cookies.delete("X-STRAVA-JWT");
+        return responseRedir;
+      }
       response.cookies.delete("X-STRAVA-JWT");
+      return response;
     }
+  }
+
+  if (request.nextUrl.pathname == "/login") {
+    return NextResponse.redirect(new URL("/", request.url));
   }
 
   return response;
 };
 
 export const config = {
-  matcher: ["/", "/api/:path*"],
+  matcher: ["/", "/login", "/api/:path*"],
 };

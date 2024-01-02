@@ -28,7 +28,7 @@ export default (): JSX.Element => {
       .catch((error: Error) => {
         console.log(error.message);
       })
-      .finally(() => router.refresh());
+      .finally(() => router.push("/login"));
   };
 
   return (

@@ -30,11 +30,11 @@ export default ({ data, opacity }: { data: PlotDataI[]; opacity: number }): JSX.
     const el = document.getElementById("modal-preview");
     if (!el) return;
     html2canvas(el, {
-      height: 500,
-      width: 500,
+      height: 1000,
+      width: 1000,
     }).then((canvas) => {
       const link = document.createElement("a");
-      link.download = "test.png";
+      link.download = "strava_viz.png";
       link.href = canvas.toDataURL("image/png");
       link.click();
     });

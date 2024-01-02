@@ -57,7 +57,8 @@ export const useDataArrUpdate = ({
   state: DataStateI;
   filters: FilteringI;
 }): [PlotDataI[], number[][]] => {
-  // whenever the filters are updated, or the fetch state is done, grab associated data from indexedDB.
+  // whenever the filters are updated, or the fetch state is done,
+  // grab associated data from indexedDB.
   const [data, setData] = useState<PlotDataI[]>([]);
   const [groupings, setGroupings] = useState<number[][]>([]);
 

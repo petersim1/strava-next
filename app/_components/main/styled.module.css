@@ -62,4 +62,10 @@
   .plot_toggles {
     grid-column: 1 / 2;
   }
+
+  .connect_holder {
+    padding: 1rem;
+    text-align: center;
+    max-width: 90%;
+  }
 };

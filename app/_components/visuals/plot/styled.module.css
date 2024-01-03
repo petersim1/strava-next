@@ -1,16 +1,3 @@
-.plot_holder {
-  grid-row: 2 / 3;
-  grid-column: 2 / 3;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  max-width: 100%;
-  width: 100%;
-  height: 100%;
-  position: relative;
-  /* flex: 1 1; */
-}
-
 .plot {
   position: absolute;
   top: 0;

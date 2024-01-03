@@ -156,3 +156,11 @@
   flex-direction: row;
   gap: 10px;
 }
+
+@media screen and (max-width: 768px) {
+  .panel {
+    grid-row: 5 / 6;
+    grid-column: 1 / 2;
+    display: none;
+  }
+};

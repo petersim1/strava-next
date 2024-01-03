@@ -36,6 +36,11 @@ export const POST = async (request: NextRequest): Promise<NextResponse> => {
     })
     .catch((error: RequestError) => {
       console.log(error);
-      return NextResponse.json(error.message, { status: error.status, statusText: error.message });
+      const res = NextResponse.json(error.message, {
+        status: error.status,
+        statusText: error.message,
+      });
+      res.cookies.delete("X-STRAVA-JWT");
+      return res;
     });
 };

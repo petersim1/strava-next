@@ -13,6 +13,7 @@ import styles from "./styled.module.css";
 
 export default (): JSX.Element => {
   const [boxIndex, setBoxIndex] = useState(0);
+  const [filterOpen, setFilterOpen] = useState(false);
 
   const { filters, setFilters } = useLocalStorage();
   const dataState = useDataFetcher();
@@ -55,6 +56,10 @@ export default (): JSX.Element => {
     }
   };
 
+  const handleFilterOpen = (): void => {
+    setFilterOpen(!filterOpen);
+  };
+
   return (
     <>
       <Sidebar
@@ -63,10 +68,12 @@ export default (): JSX.Element => {
         dataTotCount={plotData.length}
         filters={filters}
         loading={dataState.loading}
+        filterOpen={filterOpen}
         setFilters={setFilters}
         setBoxIndex={setBoxIndex}
         handleEnter={handlePanelEnter}
         handleExit={handlePanelExit}
+        handleOpen={handleFilterOpen}
       />
       <div className={styles.plot_holder}>
         {!filters.activity && !dataState.loading && (

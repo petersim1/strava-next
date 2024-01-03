@@ -36,7 +36,7 @@ export default ({
             target="_blank"
             referrerPolicy="no-referrer"
           >
-            <div>{"-->"}</div>
+            <div>{"\u2192"}</div>
           </a>
         </div>
       ))}

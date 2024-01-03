@@ -9,11 +9,12 @@ const { CLIENT_SECRET } = process.env;
 export const GET = async (request: NextRequest): Promise<NextResponse> => {
   const url = new URL(request.nextUrl);
   const { error, code } = Object.fromEntries(url.searchParams.entries());
-  const redirectUrl = new URL("/", request.nextUrl);
+  const redirectUrlOk = new URL("/", request.nextUrl);
+  const redirectUrlErr = new URL("/login", request.nextUrl);
 
   if (error) {
-    redirectUrl.searchParams.set("error", error);
-    return NextResponse.redirect(redirectUrl);
+    redirectUrlErr.searchParams.set("error", error);
+    return NextResponse.redirect(redirectUrlErr);
   }
 
   const urlFetch = new URL("https://www.strava.com/oauth/token");
@@ -35,12 +36,12 @@ export const GET = async (request: NextRequest): Promise<NextResponse> => {
       return signJWTwithInputs(athlete, access_token, refresh_token, expires_at);
     })
     .then((token) => {
-      const res = NextResponse.redirect(redirectUrl);
+      const res = NextResponse.redirect(redirectUrlOk);
       res.cookies.set("X-STRAVA-JWT", token);
       return res;
     })
     .catch((err: RequestError) => {
       console.log(err);
-      return NextResponse.redirect(redirectUrl, { status: err.status, statusText: err.message });
+      return NextResponse.redirect(redirectUrlErr, { status: err.status, statusText: err.message });
     });
 };

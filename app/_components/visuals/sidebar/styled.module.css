@@ -98,6 +98,7 @@
 
 .filters label {
   display: block;
+  cursor: pointer;
 }
 
 .submit {
@@ -130,7 +131,7 @@
 .panel_activities a {
   width: 10%;
   color: var(--primary-mix-10);
-  font-size: 1rem;
+  font-size: 1.25rem;
 }
 
 .activity_description {

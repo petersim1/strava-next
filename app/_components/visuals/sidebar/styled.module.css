@@ -14,6 +14,19 @@
   box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.145), 0px 1px 2px rgba(0,0,0,.16);
 }
 
+.filter_toggle {
+  position: absolute;
+  display: none;
+  right: 0;
+  top: 25%;
+  transform: translateX(100%);
+  padding: 0.25rem;
+  border: 1px solid white;
+  border-radius: 0 12px 12px 0;
+  border-left: none;
+  cursor: pointer;
+}
+
 .header {
   text-align: right;
   padding-right: 1rem;
@@ -156,3 +169,30 @@
   flex-direction: row;
   gap: 10px;
 }
+
+@media screen and (max-width: 768px) {
+  .panel {
+    /* display: none; */
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 999;
+    height: 100vh;
+    width: 250px;
+    grid-row: unset;
+    grid-column: unset;
+    border-radius: 12px;
+    overflow: visible;
+    transform: translateX(-100%);
+    transition: transform 0.25s ease-in-out;
+  }
+
+  .panel:has(.filter_open) {
+    transform: translateX(0);
+  }
+
+  .filter_toggle {
+    display: block;
+  }
+};

@@ -107,5 +107,27 @@ export const createViz = (
       paths.transition().call(deactivate, 250, opacity, true);
       tooltip.html("");
     })
-    .on("touchstart", (e) => e.preventDefault());
+    .on("touchend", (e) => {
+      const [xm, ym] = d3.pointer(e);
+      const ind = d3.leastIndex(data, ({ coordinates }) =>
+        d3.min(coordinates, (d) =>
+          Math.hypot(
+            // x(d.x) - xm - plottingProps.margin.left, use this for targeting "rect"
+            // y(d.y) - ym - plottingProps.margin.top, use this for targeting "rect"
+            x(d.x) - xm,
+            y(d.y) - ym,
+          ),
+        ),
+      );
+      paths.each(function (_, i) {
+        if (i === ind) {
+          d3.select(this).raise().transition().call(activate, 100, true);
+        } else {
+          d3.select(this).transition().call(deactivate, 100, opacity, true);
+        }
+      });
+      if (ind !== undefined) {
+        updateTooltip(data[ind]);
+      }
+    });
 };

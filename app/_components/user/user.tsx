@@ -1,7 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import styles from "./styled.module.css";
 import { getUser } from "@/_actions";
-import Disconnect from "./disconnect";
 
 export default async (): Promise<JSX.Element> => {
   const { user } = await getUser();
@@ -15,7 +14,6 @@ export default async (): Promise<JSX.Element> => {
       <div>
         <span>{`${user?.firstname} ${user?.lastname}`}</span>
       </div>
-      <Disconnect />
     </div>
   );
 };

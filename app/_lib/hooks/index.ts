@@ -13,14 +13,14 @@ import { getLocalStorage } from "@/_lib/localStorage";
 export const useDataFetcher = (): DataStateI => {
   const [state, dispatch] = useReducer(dataStatusReducer, {
     error: false,
-    loading: true,
+    loading: false,
     done: false,
   });
   // on page refresh, wait until mounted to grab the date of last pull from indexedDB.
   // use this to fetch only those recent activities (if any).
   useEffect(() => {
     const db = new DB("strava");
-
+    dispatch({ type: "LOADING" });
     db.getMostRecent()
       .then((result: number) => {
         // it seems strava API is EXCLUSIVE, so I don't need to add 1000ms.
@@ -34,7 +34,10 @@ export const useDataFetcher = (): DataStateI => {
         throw new RequestError(response.statusText, response.status);
       })
       .then((data) => {
-        return db.addData(data);
+        if (!data.success) {
+          throw new RequestError(data.statusText, data.status);
+        }
+        return db.addData(data.results);
       })
       .catch((error) => {
         console.log(error.message);

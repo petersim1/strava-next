@@ -76,10 +76,13 @@ export default (): JSX.Element => {
         handleOpen={handleFilterOpen}
       />
       <div className={styles.plot_holder}>
-        {!filters.activity && !dataState.loading && (
+        {!filters.activity && dataState.done && !dataState.error && (
           <p className={styles.placeholder}>
             Select an <b>Activity</b> to get started
           </p>
+        )}
+        {dataState.error && (
+          <p className={styles.placeholder}>Something went wrong, try again later.</p>
         )}
         {filters.activity && !dataState.loading && (
           <Plot data={groupData} opacity={Number(filters.opacity)} />

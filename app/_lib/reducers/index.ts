@@ -5,7 +5,7 @@ export const dataStatusReducer = (state: DataStateI, action: { type: string }): 
     case "DONE":
       return { ...state, done: true, loading: false };
     case "ERROR":
-      return { ...state, error: true };
+      return { ...state, error: true, loading: false };
     case "LOADING":
       return { ...state, loading: true };
     default:

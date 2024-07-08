@@ -15,6 +15,10 @@ const dataRecursion = (
   page: number,
   results: StravaActivitySimpleI[],
 ): Promise<StravaActivitySimpleI[]> => {
+  // Treat this as an all or nothing endpoint. Simplifies messaging on the frontend.
+  // we COULD catch an error and send results to the client, but it likely doesn't make
+  // as we'd need additional messaging that not all activities were returned. I think
+  // a user would prefer all or nothing.
   baseURL.searchParams.set("page", page.toString());
   return fetch(baseURL, { headers })
     .then((response) => {
@@ -50,7 +54,7 @@ export const GET = async (request: NextRequest): Promise<NextResponse> => {
   headers.set("Authorization", `Bearer ${accessToken}`);
 
   const baseURL = new URL("https://www.strava.com/api/v3/athlete/activities");
-  baseURL.searchParams.set("per_page", "50");
+  baseURL.searchParams.set("per_page", "200");
 
   const { before, after } = Object.fromEntries(request.nextUrl.searchParams.entries());
 
@@ -59,9 +63,13 @@ export const GET = async (request: NextRequest): Promise<NextResponse> => {
 
   return dataRecursion(baseURL, headers, 1, [])
     .then((results) => {
-      return NextResponse.json(results);
+      return NextResponse.json({ results, success: true });
     })
     .catch((error: RequestError) => {
-      return NextResponse.json([], { status: error.status, statusText: error.message });
+      return NextResponse.json({
+        success: false,
+        status: error.status,
+        statusText: error.message,
+      });
     });
 };

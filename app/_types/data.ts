@@ -39,6 +39,11 @@ export type DataStateI = {
   done: boolean;
 };
 
+export type DataCountI = {
+  total: number;
+  relevant: number;
+};
+
 export type CoordinatesI = {
   x: number;
   y: number;

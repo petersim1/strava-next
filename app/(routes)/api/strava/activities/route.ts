@@ -1,75 +1,58 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { cookies } from "next/headers";
-import { decodeJwt } from "jose";
 
-import { JWTtoSignI } from "@/_types/auth";
-import { StravaActivitySimpleI } from "@/_types/data";
 import { StravaActivityI } from "@/_types/strava";
 import { RequestError } from "@/_lib/errors";
 import { constrainOutput } from "@/_lib/utils";
-
-const dataRecursion = (
-  baseURL: URL,
-  headers: Headers,
-  page: number,
-  results: StravaActivitySimpleI[],
-): Promise<StravaActivitySimpleI[]> => {
-  // Treat this as an all or nothing endpoint. Simplifies messaging on the frontend.
-  // we COULD catch an error and send results to the client, but it likely doesn't make
-  // as we'd need additional messaging that not all activities were returned. I think
-  // a user would prefer all or nothing.
-  baseURL.searchParams.set("page", page.toString());
-  return fetch(baseURL, { headers })
-    .then((response) => {
-      if (response.ok) {
-        return response.json();
-      }
-      throw new RequestError(response.statusText, response.status);
-    })
-    .then((activities: StravaActivityI[]) => {
-      if (activities.length === 0) {
-        return results;
-      }
-      activities.forEach((activity) => {
-        if (["Ride", "Run"].includes(activity.sport_type)) {
-          const data = constrainOutput(activity);
-          results.push({ ...data });
-        }
-      });
-      return dataRecursion(baseURL, headers, page + 1, results);
-    });
-};
+import { cookies } from "next/headers";
+import { decodeJwt } from "jose";
+import { JWTtoSignI } from "@/_types/auth";
 
 export const GET = async (request: NextRequest): Promise<NextResponse> => {
+  // can bypass auth as we use include in the proxy request.
+  // headers are forwarded in the proxy request as well.
+
   const cookieStore = cookies();
   const { value: token } = cookieStore.get("X-STRAVA-JWT") ?? { value: undefined };
   if (!token) {
-    return NextResponse.json([], { status: 401 });
+    return NextResponse.json({});
   }
-
   const decoded = decodeJwt(token);
   const { access_token: accessToken } = decoded as JWTtoSignI;
+
   const headers = new Headers();
   headers.set("Authorization", `Bearer ${accessToken}`);
 
   const baseURL = new URL("https://www.strava.com/api/v3/athlete/activities");
-  baseURL.searchParams.set("per_page", "200");
 
-  const { before, after } = Object.fromEntries(request.nextUrl.searchParams.entries());
+  const { before, after, page } = Object.fromEntries(request.nextUrl.searchParams.entries());
 
   if (before) baseURL.searchParams.set("before", (Number(before) / 1000).toString());
   if (after) baseURL.searchParams.set("after", (Number(after) / 1000).toString());
 
-  return dataRecursion(baseURL, headers, 1, [])
-    .then((results) => {
-      return NextResponse.json({ results, success: true });
+  baseURL.searchParams.set("per_page", "200");
+  baseURL.searchParams.set("page", page.toString());
+
+  return fetch(baseURL, { headers })
+    .then((response) => {
+      if (!response.ok) {
+        throw new RequestError(response.statusText, response.status);
+      }
+      return response.json();
     })
-    .catch((error: RequestError) => {
+    .then((activities: StravaActivityI[]) => {
+      const numActivities = activities.length;
+      const more = numActivities > 0;
+      const results = activities
+        .filter((activity) => ["Ride", "Run"].includes(activity.sport_type))
+        .map((activity) => constrainOutput(activity));
+
       return NextResponse.json({
-        success: false,
-        status: error.status,
-        statusText: error.message,
+        success: true,
+        results,
+        more,
+        nTotal: numActivities,
+        nRelevant: results.length,
       });
     });
 };

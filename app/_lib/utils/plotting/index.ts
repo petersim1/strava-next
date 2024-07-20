@@ -21,6 +21,8 @@ export const createViz = (
   // ensures square plots, with data at centroid. Plot would be skewed otherwise.
   const [xExt, yExt] = getBoxedExtent(dataFlat);
 
+  console.log(xExt, yExt);
+
   const x = d3
     .scaleLinear()
     .domain(xExt)

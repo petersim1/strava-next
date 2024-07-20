@@ -18,6 +18,8 @@ export default ({ url }: { url: string }): JSX.Element => {
   // will require patch, should accept a URLSearchParams object.
   urlUse.search = search.toString();
   const onClick = (): void => {
+    // basically says: prioritize deeplink, if it doesn't succeed within timeout
+    // they fallback to the website.
     const now = new Date().valueOf();
     setTimeout(function () {
       // navigating back to page still flashes web auth. Likely need to fix this.

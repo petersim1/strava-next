@@ -16,7 +16,7 @@ export default (): JSX.Element => {
   const [filterOpen, setFilterOpen] = useState(false);
 
   const { filters, setFilters } = useLocalStorage();
-  const dataState = useDataFetcher();
+  const { state: dataState, counts } = useDataFetcher();
   // takes the dataState & filters as dependencies to generate plot data.
   const [plotData, groupings] = useDataArrUpdate({ state: dataState, filters: filters });
 
@@ -87,7 +87,19 @@ export default (): JSX.Element => {
         {filters.activity && !dataState.loading && (
           <Plot data={groupData} opacity={Number(filters.opacity)} />
         )}
-        {dataState.loading && <Loader />}
+        {dataState.loading && (
+          <div className={styles.loader_holder}>
+            <Loader />
+            <div>
+              <p>
+                Total Activities Found: <span>{counts.total}</span>
+              </p>
+              <p>
+                Rides / Runs Found: <span>{counts.relevant}</span>
+              </p>
+            </div>
+          </div>
+        )}
       </div>
       <div className={styles.plot_toggles}>
         <Toggle boxIndex={boxIndex} handleBoxIndex={handleBoxIndex} />

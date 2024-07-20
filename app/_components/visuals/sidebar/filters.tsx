@@ -38,7 +38,6 @@ export default ({
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>): void => {
     const { name, value } = e.currentTarget;
-    console.log(name, value);
     setSelection((prev) => ({ ...prev, [name]: value }));
   };
 

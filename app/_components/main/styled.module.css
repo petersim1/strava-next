@@ -11,6 +11,15 @@
   border-radius: 10px;
 }
 
+.loader_holder {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  text-align: left;
+}
+
 .visual_holder {
   flex: 1;
   width: 100%;

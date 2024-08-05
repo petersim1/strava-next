@@ -30,7 +30,7 @@ export const GET = async (request: NextRequest): Promise<NextResponse> => {
   if (before) baseURL.searchParams.set("before", (Number(before) / 1000).toString());
   if (after) baseURL.searchParams.set("after", (Number(after) / 1000).toString());
 
-  baseURL.searchParams.set("per_page", "200");
+  baseURL.searchParams.set("per_page", "50");
   baseURL.searchParams.set("page", page.toString());
 
   return fetch(baseURL, { headers })
